@@ -39,8 +39,8 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install the data export's only dependency
-        run: python -m pip install PyYAML==6.0.2
+      - name: Install the data export's dependencies
+        run: python -m pip install PyYAML==6.0.2 pillow==12.1.1
 
       - name: Rebuild the site data from results/
         run: python -m runner.site_data

@@ -192,14 +192,13 @@ function legend(items) {
   return h("ul", { class: "legend" }, items.map((item) => h("li", {}, swatch(item), item.label)));
 }
 
-function figure({ title, description, legendItems, controls, source }) {
+function figure({ title, description, legendItems, controls }) {
   const plot = h("div", { class: "plot" });
   const fig = h("figure", { class: "figure" },
     h("figcaption", {}, h("h3", { text: title }), description ? h("p", { text: description }) : null),
     controls ? h("div", { class: "figure-controls" }, controls) : null,
     legendItems ? legend(legendItems) : null,
-    plot,
-    source ? h("p", { class: "source", text: `From ${source}` }) : null);
+    plot);
   return { fig, plot };
 }
 

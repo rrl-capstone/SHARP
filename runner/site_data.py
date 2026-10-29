@@ -17,7 +17,6 @@ import csv
 import json
 import logging
 import math
-import shutil
 import sys
 from pathlib import Path
 
@@ -28,6 +27,7 @@ log = logging.getLogger("runner.site_data")
 RESULTS_DIR = config.REPO_ROOT / "results"
 SITE_DATA_DIR = config.REPO_ROOT / "docs" / "data"
 FIGURES_DIR = config.REPO_ROOT / "docs" / "figures"
+WHITE = 246   # a pixel this light in every channel counts as background
 RUN_INFO_FIELDS = ("run", "status", "started_utc", "finished_utc", "git_commit")
 
 Cell = int | float | str | None
@@ -99,8 +99,20 @@ def copy_figures(results_root: Path = RESULTS_DIR, out_dir: Path = FIGURES_DIR) 
     figures = sorted((results_root / "full" / "5_gagne" / "plots").glob("*.png"))
     out_dir.mkdir(parents=True, exist_ok=True)
     for figure in figures:
-        shutil.copyfile(figure, out_dir / figure.name)
+        _without_white_background(figure, out_dir / figure.name)
     return len(figures)
+
+
+def _without_white_background(source: Path, target: Path) -> None:
+    """Make the plot's white background transparent, so the figure sits on the page like the others."""
+    from PIL import Image, ImageChops   # only this step needs Pillow
+
+    with Image.open(source) as image:
+        rgba = image.convert("RGBA")
+    red, green, blue, _ = rgba.split()
+    lightest = ImageChops.darker(ImageChops.darker(red, green), blue)
+    rgba.putalpha(lightest.point([0 if v >= WHITE else 255 for v in range(256)]))
+    rgba.save(target)
 
 
 def main(argv: list[str] | None = None) -> int:

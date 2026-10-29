@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+from PIL import Image
 
 from runner import site_data
 
@@ -52,6 +53,12 @@ def test_only_the_full_cohorts_figures_are_published(tmp_path: Path) -> None:
     for profile, name in [("full", "1_score.png"), ("sample_1pct", "2_small.png")]:
         plots = tmp_path / profile / "5_gagne" / "plots"
         plots.mkdir(parents=True)
-        (plots / name).write_bytes(b"png")
+        image = Image.new("RGB", (2, 1), (255, 255, 255))
+        image.putpixel((1, 0), (30, 60, 120))
+        image.save(plots / name)
     assert site_data.copy_figures(tmp_path, tmp_path / "figures") == 1
     assert [p.name for p in (tmp_path / "figures").iterdir()] == ["1_score.png"]
+    with Image.open(tmp_path / "figures" / "1_score.png") as out:
+        background, mark = out.getpixel((0, 0)), out.getpixel((1, 0))
+    assert isinstance(background, tuple) and background[3] == 0
+    assert mark == (30, 60, 120, 255)

@@ -399,7 +399,7 @@ tbody tr:last-child > * { border-bottom: 0; }
 .more-item > p, .more-results figcaption p { margin: 0; color: var(--muted); font-size: var(--t-14); max-width: 72ch; }
 .check-line { margin: 0 0 var(--s3); font-size: var(--t-14); color: var(--muted); }
 .check-line strong { color: var(--ink); font-weight: 600; }
-.more-results img { display: block; width: 100%; height: auto; margin-top: var(--s3); border: 1px solid var(--rule); border-radius: var(--radius); background: #fff; }
+.more-results img.finding-image { display: block; width: 100%; height: auto; margin-top: var(--s4); }
 
 /* ---------------------------------------------------------------- sidebar and background icons */
 

@@ -143,7 +143,6 @@ function eligible(data, body) {
     title: "People left after each eligibility step, by year",
     description: "A person can be eligible in several years; each year is checked on its own.",
     legendItems: series,
-    source: "1_cohort/age50_alive_by_year, same_insurance_by_year, eligible_by_year",
   });
   body.replaceChildren(
     finding(strong(count(total)), ` eligible person-years from ${years[0]} to ${years.at(-1)}, between `,
@@ -168,7 +167,6 @@ function groups(data, body) {
   const trend = figure({
     title: "People with HIV in each study year",
     description: "Eligible that year and with HIV found in that year or before.",
-    source: "2_hiv_groups/hiv_group_by_year, control_pool_by_year",
   });
 
   const overall = overlap.find((r) => String(r.found_by).includes("overall"))?.people;
@@ -184,7 +182,6 @@ function groups(data, body) {
   const routes = figure({
     title: "Which routes found each person with HIV",
     description: `Everyone who ever met the definition (${count(overall)} people), by the combination of routes that found them.`,
-    source: "2_hiv_groups/hiv_rule_overlap",
   });
 
   body.replaceChildren(
@@ -200,12 +197,11 @@ function groups(data, body) {
 
 // ---------------------------------------------------------------- 3 and 5. conditions
 
-function conditionFigure(rows, series, title, description, source) {
+function conditionFigure(rows, series, title, description) {
   const { fig, plot } = figure({
     title,
     description,
     legendItems: series,
-    source,
   });
   return { fig, draw: () => dotRows(plot, { rows, series, format: percent, axisFormat: pctAxis, label: title, aside: (r) => r.gap, asideLabel: "Gap" }) };
 }
@@ -224,13 +220,11 @@ function before(data, body) {
   const compared = rows.filter((r) => isNum(r.values.hiv) && isNum(r.values.pool));
   const higher = compared.filter((r) => r.values.hiv > r.values.pool).length;
   const main = conditionFigure(rows, series, "Share of person-years with each condition, before matching",
-    "All years and ages pooled. Gap is percentage points: people with HIV minus all controls.",
-    "3_conditions/conditions_before_matching_by_age");
+    "All years and ages pooled. Gap is percentage points: people with HIV minus all controls.");
   const countsRows = countRows(table(data, "3_conditions/condition_count_before_matching"), (r) => (r.hiv === 1 ? "hiv" : "pool"));
   const counts = figure({
     title: "How many of the 11 conditions each person-year has, before matching",
     legendItems: series,
-    source: "3_conditions/condition_count_before_matching",
   });
   body.replaceChildren(
     finding("Before matching, people with HIV had a higher share than the whole control pool for ", strong(`${higher} of the ${compared.length}`),
@@ -258,13 +252,11 @@ function after(data, body) {
   const higher = compared.filter((r) => r.values.hiv > r.values.matched).length;
   const largest = [...compared].sort((a, b) => Math.abs(b.values.hiv - b.values.matched) - Math.abs(a.values.hiv - a.values.matched))[0];
   const main = conditionFigure(rows, series, "Share of person-years with each condition, after matching",
-    "Open circles repeat the whole control pool from step 3. Gap is percentage points: people with HIV minus matched controls.",
-    "4_matching/conditions_after_matching_by_age");
+    "Open circles repeat the whole control pool from step 3. Gap is percentage points: people with HIV minus matched controls.");
   const countsRows = countRows(table(data, "4_matching/condition_count_after_matching"), (r) => (r.hiv === 1 ? "hiv" : "matched"));
   const counts = figure({
     title: "How many of the 11 conditions each person-year has, after matching",
     legendItems: [SERIES.matched, SERIES.hiv],
-    source: "4_matching/condition_count_after_matching",
   });
   body.replaceChildren(
     finding("After matching, people with HIV had a higher share for ", strong(`${higher} of the ${compared.length}`),
@@ -331,7 +323,6 @@ function matching(data, body) {
     description: "Standardized mean difference between people with HIV and controls. The shaded band is ±0.1, the usual limit for good balance. Sex is matched exactly, so it is always balanced.",
     controls: h("label", { class: "control", for: "balance-year" }, "Year", yearSelect),
     legendItems: series,
-    source: "4_matching/balance_smd",
   });
   const drawLove = () => {
     const year = Number(yearSelect.value);
@@ -347,8 +338,7 @@ function matching(data, body) {
   const tableOne = h("figure", { class: "figure" },
     h("figcaption", {}, h("h3", { text: "Characteristics before and after matching" }),
       h("p", { text: "Percent of person-years in each group, all study years together." })),
-    characteristicsTable(table(data, "4_matching/characteristics_before_and_after_matching")),
-    h("p", { class: "source", text: "From 4_matching/characteristics_before_and_after_matching" }));
+    characteristicsTable(table(data, "4_matching/characteristics_before_and_after_matching")));
 
   const share = isNum(hivPeople) && isNum(hivMatched) && hivPeople > 0 ? percent((100 * hivMatched) / hivPeople) : "hidden";
   body.replaceChildren(
@@ -381,7 +371,6 @@ function gagne(data, body) {
   const trend = figure({
     title: "Mean Gagne score by year, leaving out the HIV/AIDS group",
     legendItems: series,
-    source: "5_gagne/gagne_scores_by_year",
   });
 
   const parts = LEVELS.map(([key, label], i) => ({ key, label, color: COLORS.ramp4[i], dark: i >= 2 }));
@@ -397,7 +386,6 @@ function gagne(data, body) {
     title: "Person-years at each Gagne level",
     description: "These levels are the strata for the care quality comparison in step 7.",
     legendItems: parts.map((p) => ({ ...p, style: "block" })),
-    source: "5_gagne/gagne_levels",
   });
 
   const groupIds = Object.keys(GAGNE).map(Number);
@@ -412,7 +400,6 @@ function gagne(data, body) {
     title: "Share of person-years with each Gagne group",
     description: "Gap is percentage points: people with HIV minus matched controls.",
     legendItems: [SERIES.matched, SERIES.hiv],
-    source: "5_gagne/gagne_group_prevalence",
   });
 
   const groupChoice = h("div", { class: "segmented small", role: "radiogroup", "aria-label": "Group shown in the network" },
@@ -425,7 +412,6 @@ function gagne(data, body) {
     title: "Which Gagne groups occur together",
     description: "A line joins two groups found in the same person-year more often than chance (lift: how many times more often). Thicker, darker lines mean a higher lift. Pairs seen in fewer than 11 person-years are left out. Hover or focus a group to see its partners.",
     controls: [groupChoice, h("label", { class: "control", for: "network-lift" }, "Show pairs found together", liftSelect)],
-    source: "5_gagne/gagne_network_links, gagne_group_prevalence",
   });
   const drawNetwork = () => {
     const hiv = Number(groupChoice.querySelector("input:checked")?.value ?? 1);
@@ -483,7 +469,6 @@ function care(data, body) {
     title: "Share of person-years that met each care quality measure",
     description: "Matched groups, all years together. Gap is percentage points: people with HIV minus matched controls.",
     legendItems: series,
-    source: "6_care_quality/care_quality_overall",
   });
 
   const choice = h("select", { id: "care-measure" }, measures.map((m) =>
@@ -513,10 +498,9 @@ function care(data, body) {
     const yearFig = figure({
       title: "By year",
       legendItems: yearSeries,
-      source: "6_care_quality/care_quality_by_year",
     });
-    const levelFig = figure({ title: "Within Gagne levels", description: "People with HIV compared with controls who are about as sick.", legendItems: series,source: "6_care_quality/care_quality_by_gagne_level" });
-    const ageFig = figure({ title: "By age", legendItems: series,source: "6_care_quality/care_quality_by_age" });
+    const levelFig = figure({ title: "Within Gagne levels", description: "People with HIV compared with controls who are about as sick.", legendItems: series });
+    const ageFig = figure({ title: "By age", legendItems: series });
     detail.replaceChildren(yearFig.fig, h("div", { class: "pair" }, levelFig.fig, ageFig.fig));
     lineChart(yearFig.plot, { x: years, series: yearSeries, format: percent, axisFormat: pctAxis, label: `${m.label}, by year` });
     dotRows(levelFig.plot, { rows: levelRows, series, format: percent, axisFormat: pctAxis, label: `${m.label}, by Gagne level` });
@@ -686,7 +670,7 @@ function tableBlock(data, name) {
   }));
   return h("div", { class: "more-item", "data-search": `${title} ${about} ${name}`.toLowerCase() },
     h("h4", { text: title }), about ? h("p", { text: about }) : null,
-    dataTable(columns, rows, title), h("p", { class: "source", text: `From ${name}` }));
+    dataTable(columns, rows, title));
 }
 
 // The All results page: every table of the run, by step, with a search box.
@@ -719,14 +703,13 @@ function moreResults(data, body, part, profile) {
     if (title === "check" && data.tables[name]) block.append(checkLine(table(data, name), about));
   }
   if (part === "gagne") {
-    block.append(h("h3", { text: "Rhea's figures" }));
     if (profile !== "full") {
-      block.append(h("p", { class: "note", text: "These figures are shown for the full cohort only: in the small test runs, one person could be read off the smallest bars." }));
+      block.append(h("p", { class: "note", text: "More charts of the Gagne score are shown for the full cohort only: in the small test runs, one person could be read off the smallest bars." }));
     } else {
       for (const [file, title, about] of FIGURES) {
         block.append(h("figure", { class: "figure" },
-          h("figcaption", {}, h("h4", { text: title }), h("p", { text: about })),
-          h("img", { src: `figures/${file}`, alt: `${title}. ${about}`, loading: "lazy" })));
+          h("figcaption", {}, h("h3", { text: title }), h("p", { text: about })),
+          h("img", { class: "finding-image", src: `figures/${file}`, alt: `${title}. ${about}`, loading: "lazy" })));
       }
     }
   }
