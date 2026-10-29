@@ -16,13 +16,13 @@ Six stages, run in order by one command (details of every step: [`pipeline/READM
    missing demographics.
 2. **HIV groups** (Lifei, with the PI's drug rules): the HIV group, and a control pool of
    everyone else who is eligible.
-3. **Conditions**: which of the study conditions each person has each year; the two groups
+3. **Conditions** (Rama): which of the study conditions each person has each year; the two groups
    compared **before matching**.
-4. **Matching** (Lifei): 1:1 propensity score matching within each year on birth year, sex,
+4. **Matching** (Rama): 1:1 propensity score matching within each year on birth year, sex,
    census region and race; characteristics before and after, a CONSORT count for year one, and
    the conditions compared again **after matching**.
 5. **Gagne** (Rhea): how sick each matched person is.
-6. **Care quality**: each Table 1 measure in the matched groups, overall and **within Gagne
+6. **Care quality** (Rama): each Table 1 measure in the matched groups, overall and **within Gagne
    levels**, so people with HIV are compared with controls who are about as sick.
 
 ## Running it
