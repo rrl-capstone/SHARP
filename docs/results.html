@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>All results | SHARP</title>
+  <meta name="description" content="Aggregated results of the OHDSI-3 capstone pipeline: adults aged 50 and older in Komodo Health claims, 2016 to 2025, people with HIV and matched people without HIV.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='11' cy='16' r='9' fill='%231B4B85'/%3E%3Ccircle cx='21' cy='16' r='9' fill='%237BA2D6' stroke='%23F6F8FB' stroke-width='2'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400..700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+  <link rel="stylesheet" href="assets/site.css">
+  <script defer src="assets/charts.js"></script>
+  <script defer src="assets/site.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to the results</a>
+
+  <div class="layout">
+    <aside class="sidebar" aria-label="Site">
+      <a class="brand" href="index.html">
+        <svg class="brand-mark" viewBox="0 0 32 20" aria-hidden="true"><circle cx="10" cy="10" r="8" fill="#1B4B85"/><circle cx="22" cy="10" r="8" fill="#7BA2D6" stroke="#F6F8FB" stroke-width="2"/></svg>
+        <span class="brand-name">OHDSI-3</span>
+        <span class="brand-lab">Olivieri-Mui Lab, Northeastern University</span>
+      </a>
+      <nav class="rail" aria-label="Pipeline steps">
+        <ol>
+          <li><a href="index.html"><span class="n"></span>Overview</a></li>
+          <li><a href="eligible.html"><span class="n">1</span>Eligible people</a></li>
+          <li><a href="groups.html"><span class="n">2</span>HIV and controls</a></li>
+          <li><a href="before.html"><span class="n">3</span>Conditions before matching</a></li>
+          <li><a href="matching.html"><span class="n">4</span>Matching</a></li>
+          <li><a href="after.html"><span class="n">5</span>Conditions after matching</a></li>
+          <li><a href="gagne.html"><span class="n">6</span>How sick: Gagne score</a></li>
+          <li><a href="care.html"><span class="n">7</span>Care quality</a></li>
+          <li><a href="results.html"><span class="n"></span>All results</a></li>
+        <li><a href="methods.html"><span class="n"></span>Methods</a></li>
+        </ol>
+      </nav>
+      <div class="profile-picker">
+        <span id="profile-label" class="control-label">Results for</span>
+        <div class="segmented" role="radiogroup" aria-labelledby="profile-label">
+          <label><input type="radio" name="profile" value="full" checked><span>Full cohort</span></label>
+          <label><input type="radio" name="profile" value="sample_30pct"><span>30% sample</span></label>
+          <label><input type="radio" name="profile" value="sample_1pct"><span>1% sample</span></label>
+        </div>
+        <p class="status" id="status" role="status"></p>
+      </div>
+    </aside>
+
+    <main id="main" tabindex="-1" aria-busy="true">
+      <div class="content">
+        <section class="section" id="results" aria-labelledby="h-results">
+          <h2 id="h-results">All results</h2>
+          <p class="lede">Every table the pipeline saved for this run, grouped by step, with what each one shows. Counts are approximate, and counts under 11 are hidden.</p>
+          <div class="section-body" data-part="results"></div>
+        </section>
+        <nav class="pager" aria-label="Next and previous">
+          <a class="prev" href="care.html"><span>Previous</span>Care quality</a>
+          <a class="next" href="methods.html"><span>Next</span>Methods</a>
+        </nav>
+      </div>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>Aggregated results only, with no person-level data. Counts from 1 to 10 are shown as &lt;11, and all other counts are rounded to the nearest 10.</p>
+  </footer>
+</body>
+</html>
