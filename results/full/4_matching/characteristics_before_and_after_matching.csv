@@ -1,0 +1,61 @@
+stage,variable,category,hiv,person_years,pct_of_group
+before,age group,50-64,0,41700000,37.5
+before,age group,50-64,1,98600,64.4
+before,age group,65-74,0,38400000,34.6
+before,age group,65-74,1,36500,23.9
+before,age group,75+,0,31100000,27.9
+before,age group,75+,1,17900,11.7
+before,census region,Midwest,0,27800000,25.0
+before,census region,Midwest,1,19500,12.8
+before,census region,Northeast,0,26600000,23.9
+before,census region,Northeast,1,40200,26.3
+before,census region,Other,0,13600,0.0
+before,census region,Other,1,<11,
+before,census region,South,0,39400000,35.5
+before,census region,South,1,72500,47.4
+before,census region,West,0,17400000,15.6
+before,census region,West,1,20800,13.6
+before,race and ethnicity,ASIAN OR PACIFIC ISLANDER,0,4620000,4.2
+before,race and ethnicity,ASIAN OR PACIFIC ISLANDER,1,3290,2.1
+before,race and ethnicity,BLACK OR AFRICAN AMERICAN,0,14000000,12.6
+before,race and ethnicity,BLACK OR AFRICAN AMERICAN,1,51600,33.7
+before,race and ethnicity,HISPANIC OR LATINO,0,11300000,10.1
+before,race and ethnicity,HISPANIC OR LATINO,1,23100,15.1
+before,race and ethnicity,OTHER,0,3600000,3.2
+before,race and ethnicity,OTHER,1,4250,2.8
+before,race and ethnicity,WHITE,0,77700000,69.9
+before,race and ethnicity,WHITE,1,70800,46.2
+before,sex,F,0,62400000,56.1
+before,sex,F,1,44800,29.3
+before,sex,M,0,48800000,43.9
+before,sex,M,1,108000,70.7
+after,age group,50-64,0,98600,64.4
+after,age group,50-64,1,98600,64.4
+after,age group,65-74,0,36500,23.9
+after,age group,65-74,1,36500,23.9
+after,age group,75+,0,17900,11.7
+after,age group,75+,1,17900,11.7
+after,census region,Midwest,0,19500,12.8
+after,census region,Midwest,1,19500,12.8
+after,census region,Northeast,0,40200,26.2
+after,census region,Northeast,1,40200,26.3
+after,census region,Other,0,<11,
+after,census region,Other,1,<11,
+after,census region,South,0,72500,47.4
+after,census region,South,1,72500,47.4
+after,census region,West,0,20800,13.6
+after,census region,West,1,20800,13.6
+after,race and ethnicity,ASIAN OR PACIFIC ISLANDER,0,3290,2.1
+after,race and ethnicity,ASIAN OR PACIFIC ISLANDER,1,3290,2.1
+after,race and ethnicity,BLACK OR AFRICAN AMERICAN,0,51600,33.7
+after,race and ethnicity,BLACK OR AFRICAN AMERICAN,1,51600,33.7
+after,race and ethnicity,HISPANIC OR LATINO,0,23100,15.1
+after,race and ethnicity,HISPANIC OR LATINO,1,23100,15.1
+after,race and ethnicity,OTHER,0,4250,2.8
+after,race and ethnicity,OTHER,1,4250,2.8
+after,race and ethnicity,WHITE,0,70800,46.2
+after,race and ethnicity,WHITE,1,70800,46.2
+after,sex,F,0,44800,29.3
+after,sex,F,1,44800,29.3
+after,sex,M,0,108000,70.7
+after,sex,M,1,108000,70.7

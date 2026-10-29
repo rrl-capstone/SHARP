@@ -1,0 +1,7 @@
+{
+  "include": ["runner", "tests", "pipeline/3_conditions", "pipeline/6_care_quality"],
+  "extraPaths": [".", "pipeline/5_gagne"],
+  "pythonVersion": "3.10",
+  "typeCheckingMode": "standard",
+  "reportMissingModuleSource": "none"
+}

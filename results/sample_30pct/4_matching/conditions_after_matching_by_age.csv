@@ -1,0 +1,67 @@
+age_group,hiv,condition,label,person_years,person_years_with,pct_with_condition
+50-64,0,cad,Coronary artery disease,29800,2320,7.8
+50-64,1,cad,Coronary artery disease,29800,3250,10.9
+50-64,0,copd,COPD,29800,1510,5.0
+50-64,1,copd,COPD,29800,3010,10.1
+50-64,0,dementia,Dementia,29800,120,0.4
+50-64,1,dementia,Dementia,29800,410,1.4
+50-64,0,diabetes,Diabetes,29800,6500,21.8
+50-64,1,diabetes,Diabetes,29800,7220,24.2
+50-64,0,gerd,GERD,29800,3010,10.1
+50-64,1,gerd,GERD,29800,4340,14.6
+50-64,0,hearing_loss,Hearing loss,29800,1010,3.4
+50-64,1,hearing_loss,Hearing loss,29800,1280,4.3
+50-64,0,hypertension,Hypertension,29800,12700,42.5
+50-64,1,hypertension,Hypertension,29800,14200,47.5
+50-64,0,neuropathy,Peripheral neuropathy,29800,1770,5.9
+50-64,1,neuropathy,Peripheral neuropathy,29800,3440,11.5
+50-64,0,oa,Osteoarthritis,29800,3080,10.3
+50-64,1,oa,Osteoarthritis,29800,3700,12.4
+50-64,0,ra,Rheumatoid arthritis,29800,430,1.4
+50-64,1,ra,Rheumatoid arthritis,29800,470,1.6
+50-64,0,vision_loss,Vision loss,29800,320,1.1
+50-64,1,vision_loss,Vision loss,29800,570,1.9
+65-74,0,cad,Coronary artery disease,10800,1780,16.4
+65-74,1,cad,Coronary artery disease,10800,2480,22.9
+65-74,0,copd,COPD,10800,1130,10.4
+65-74,1,copd,COPD,10800,1940,17.9
+65-74,0,dementia,Dementia,10800,190,1.8
+65-74,1,dementia,Dementia,10800,510,4.7
+65-74,0,diabetes,Diabetes,10800,3320,30.7
+65-74,1,diabetes,Diabetes,10800,4020,37.2
+65-74,0,gerd,GERD,10800,1480,13.7
+65-74,1,gerd,GERD,10800,2240,20.7
+65-74,0,hearing_loss,Hearing loss,10800,700,6.4
+65-74,1,hearing_loss,Hearing loss,10800,1050,9.7
+65-74,0,hypertension,Hypertension,10800,6540,60.5
+65-74,1,hypertension,Hypertension,10800,7150,66.2
+65-74,0,neuropathy,Peripheral neuropathy,10800,1000,9.3
+65-74,1,neuropathy,Peripheral neuropathy,10800,2060,19.1
+65-74,0,oa,Osteoarthritis,10800,1690,15.7
+65-74,1,oa,Osteoarthritis,10800,2240,20.8
+65-74,0,ra,Rheumatoid arthritis,10800,210,1.9
+65-74,1,ra,Rheumatoid arthritis,10800,350,3.3
+65-74,0,vision_loss,Vision loss,10800,180,1.7
+65-74,1,vision_loss,Vision loss,10800,350,3.2
+75+,0,cad,Coronary artery disease,5450,1340,24.6
+75+,1,cad,Coronary artery disease,5450,2160,39.6
+75+,0,copd,COPD,5450,690,12.6
+75+,1,copd,COPD,5450,1520,27.9
+75+,0,dementia,Dementia,5450,440,8.0
+75+,1,dementia,Dementia,5450,890,16.4
+75+,0,diabetes,Diabetes,5450,1840,33.8
+75+,1,diabetes,Diabetes,5450,2810,51.5
+75+,0,gerd,GERD,5450,880,16.2
+75+,1,gerd,GERD,5450,1880,34.5
+75+,0,hearing_loss,Hearing loss,5450,620,11.3
+75+,1,hearing_loss,Hearing loss,5450,1060,19.4
+75+,0,hypertension,Hypertension,5450,3950,72.4
+75+,1,hypertension,Hypertension,5450,4460,81.7
+75+,0,neuropathy,Peripheral neuropathy,5450,680,12.5
+75+,1,neuropathy,Peripheral neuropathy,5450,1600,29.3
+75+,0,oa,Osteoarthritis,5450,1130,20.6
+75+,1,oa,Osteoarthritis,5450,1930,35.3
+75+,0,ra,Rheumatoid arthritis,5450,120,2.1
+75+,1,ra,Rheumatoid arthritis,5450,360,6.6
+75+,0,vision_loss,Vision loss,5450,140,2.6
+75+,1,vision_loss,Vision loss,5450,300,5.5

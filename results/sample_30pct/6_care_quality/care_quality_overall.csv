@@ -1,0 +1,31 @@
+measure_id,condition,label,higher_is_better,hiv,person_years,person_years_met,pct_met
+cad_acei_arb,Coronary artery disease,ACE inhibitor or ARB (with diabetes or weak heart),1,0,3410,2430,71.3
+cad_acei_arb,Coronary artery disease,ACE inhibitor or ARB (with diabetes or weak heart),1,1,5770,3750,65.0
+copd_lama,COPD,Long-acting inhaled anticholinergic,1,0,3320,810,24.5
+copd_lama,COPD,Long-acting inhaled anticholinergic,1,1,6470,1530,23.6
+dementia_cognitive,Dementia,Cognitive assessment,1,0,750,20,2.8
+dementia_cognitive,Dementia,Cognitive assessment,1,1,1810,20,0.9
+diabetes_poor_control,Diabetes,HbA1c above 9% or not tested,0,0,10100,1440,14.3
+diabetes_poor_control,Diabetes,HbA1c above 9% or not tested,0,1,11500,1850,16.1
+diabetic_foot_exam,Peripheral neuropathy,Lower-limb nerve exam (people with diabetes),1,0,10100,260,2.6
+diabetic_foot_exam,Peripheral neuropathy,Lower-limb nerve exam (people with diabetes),1,1,11500,260,2.3
+eye_exam,Vision and hearing,Eye exam in the last 2 years,1,0,45500,15600,34.3
+eye_exam,Vision and hearing,Eye exam in the last 2 years,1,1,44900,18200,40.6
+gerd_alarm_endoscopy,GERD,Endoscopy when alarm symptoms,1,0,1980,680,34.4
+gerd_alarm_endoscopy,GERD,Endoscopy when alarm symptoms,1,1,4960,1250,25.3
+gerd_ppi,GERD,On a proton pump inhibitor,1,0,5380,3750,69.8
+gerd_ppi,GERD,On a proton pump inhibitor,1,1,8460,5370,63.5
+hearing_screen_50_64,Vision and hearing,Hearing screen in the last 5 years (50-64),1,0,28800,1420,4.9
+hearing_screen_50_64,Vision and hearing,Hearing screen in the last 5 years (50-64),1,1,28600,1550,5.4
+hearing_screen_65plus,Vision and hearing,Hearing screen in the last 3 years (65+),1,0,15000,650,4.3
+hearing_screen_65plus,Vision and hearing,Hearing screen in the last 3 years (65+),1,1,14200,800,5.7
+htn_treated,Hypertension,On a blood pressure medicine or BP below 140/90,1,0,23200,21500,92.9
+htn_treated,Hypertension,On a blood pressure medicine or BP below 140/90,1,1,25800,23400,91.0
+oa_function_pain,Osteoarthritis,Function and pain assessed,1,0,5890,<11,
+oa_function_pain,Osteoarthritis,Function and pain assessed,1,1,7870,20,0.1
+oa_otc_meds,Osteoarthritis,Over-the-counter pain medicine assessed,1,0,5890,<11,
+oa_otc_meds,Osteoarthritis,Over-the-counter pain medicine assessed,1,1,7870,<11,
+ra_disease_activity,Rheumatoid arthritis,Disease activity assessed,1,0,750,<11,
+ra_disease_activity,Rheumatoid arthritis,Disease activity assessed,1,1,1190,<11,
+ra_glucocorticoid,Rheumatoid arthritis,Glucocorticoid use assessed,1,0,750,<11,
+ra_glucocorticoid,Rheumatoid arthritis,Glucocorticoid use assessed,1,1,1190,<11,

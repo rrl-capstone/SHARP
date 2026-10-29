@@ -1,0 +1,21 @@
+{
+  "run": "sample_30pct",
+  "status": "complete",
+  "started_utc": "2026-10-26T14:15:03+00:00",
+  "finished_utc": "2026-10-26T20:28:48+00:00",
+  "git_commit": "ece1495adbacd9dc31074589cb149310b03b3ce2",
+  "git_uncommitted_changes": true,
+  "steps": [
+    "5_gagne/gagne_1_evidence.py",
+    "5_gagne/gagne_2_scores.py",
+    "5_gagne/gagne_3_plots.py",
+    "5_gagne/gagne_4_network.py",
+    "5_gagne/gagne_5_summaries.sql",
+    "6_care_quality/1_measure_codes.py",
+    "6_care_quality/2_procedure_rows.sql",
+    "6_care_quality/3_drug_rows.sql",
+    "6_care_quality/4_quality_measures.py",
+    "6_care_quality/5_care_quality_results.sql"
+  ],
+  "config_study_yml": "# Study settings shared by everyone. Change a value here, not in the SQL.\n# Your own Redshift username and driver folder go in config/local.yml (not committed).\n\nrun:\n  # Which people to run on, when no --profile is given:\n  #   sample_1pct   the repeatable ~1% sample of people (File 00); tables end in _s1\n  #   sample_30pct  the repeatable ~30% sample; tables end in _s30\n  #   full          everyone; tables have no suffix\n  # Each profile has its own tables and results/<profile>/ folder, so all three can run at once.\n  profile: sample_1pct\n\nredshift:\n  host: ohdsi-lab-redshift-cluster-prod.clsyktjhufn7.us-east-1.redshift.amazonaws.com\n  port: 5439\n  database: ohdsi_lab\n\nkomodo_schema: komodo_202606\n\n# Each person-year is one calendar year, Jan 1 to Dec 31, with Dec 31 as the index date.\n# 2016 is the first full year of ICD-10 codes; 2025 is the last full year in the extract.\nstudy_years:\n  first: 2016\n  last: 2025\n\npharmacy:\n  # A fill counts only when it is the final version of the claim and was paid\n  # (STANDALONE = never adjusted, FINAL = last version of an adjusted claim).\n  final_status: [FINAL, STANDALONE]\n  paid_result: PAID\n\nconditions:\n  # A person has a study condition in a year with at least this many inpatient claims,\n  # OR this many outpatient claims on different days. Code lists: reference/conditions.csv.\n  min_inpatient_claims: 1\n  min_outpatient_claims: 2\n\nmatching:\n  # File 11 (MatchIt): within each year, exact on sex, propensity score from birth year,\n  # census region and race, nearest neighbour without replacement.\n  # ratio = controls per person with HIV: 1:1, as agreed with the PI (Oct 2026). With a ratio\n  # above 1, use the match weights (ps_matched.match_weight) for any average; the summaries do.\n  ratio: 1\n  # Maximum distance between matched people, in standard deviations of the score's logit.\n  caliper_sd: 0.2\n\ngagne:\n  # Care-quality results are also shown by Gagne level (score without the HIV/AIDS group).\n  # Each number is the top of a level: [0, 2, 4] gives \"0 or less\", \"1-2\", \"3-4\", \"5+\".\n  level_tops: [0, 2, 4]\n\nmeasures:\n  # How far back a measure may look for its numerator (the hearing screen looks back\n  # 5 years), so procedure and pharmacy claims are read from this many years before 2016.\n  lookback_years: 5\n"
+}

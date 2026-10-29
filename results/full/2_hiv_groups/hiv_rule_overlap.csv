@@ -1,0 +1,9 @@
+found_by,people
+1 inpatient only,3800
+2 outpatient only,16700
+3 medication only,4620
+4 inpatient + outpatient,3450
+5 inpatient + medication,140
+6 outpatient + medication,61400
+7 all three,47700
+8 overall (anyone found by any rule),138000

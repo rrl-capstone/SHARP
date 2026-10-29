@@ -1,0 +1,98 @@
+name,type,identifies_hiv,why_not
+abacavir,ingredient,yes,
+amprenavir,ingredient,yes,
+atazanavir,ingredient,yes,
+bictegravir,ingredient,yes,
+cabotegravir,ingredient,no,PrEP on its own (Apretude) - PI Oct 2026
+cobicistat,ingredient,yes,
+darunavir,ingredient,yes,
+delavirdine,ingredient,yes,
+didanosine,ingredient,yes,
+dolutegravir,ingredient,yes,
+doravirine,ingredient,yes,
+efavirenz,ingredient,yes,
+elvitegravir,ingredient,yes,
+emtricitabine,ingredient,no,PrEP with tenofovir (Truvada and Descovy) - PI Oct 2026
+enfuvirtide,ingredient,yes,
+etravirine,ingredient,yes,
+fosamprenavir,ingredient,yes,
+fostemsavir,ingredient,yes,
+ibalizumab,ingredient,yes,
+indinavir,ingredient,yes,
+islatravir,ingredient,yes,
+lamivudine,ingredient,no,Also treats hepatitis B - protocol
+lenacapavir,ingredient,no,PrEP on its own (Yeztugo) - PI Oct 2026
+leronlimab,ingredient,yes,
+lopinavir,ingredient,yes,
+maraviroc,ingredient,yes,
+nelfinavir,ingredient,yes,
+nevirapine,ingredient,yes,
+raltegravir,ingredient,yes,
+rilpivirine,ingredient,yes,
+ritonavir,ingredient,no,Booster also in Paxlovid (COVID-19) and hepatitis C regimens (Technivie and Viekira) - PI Oct 2026
+saquinavir,ingredient,yes,
+stavudine,ingredient,yes,
+tenofovir,ingredient,no,Hepatitis B on its own (Viread and Vemlidy) and PrEP (Truvada and Descovy) - PI Oct 2026
+tipranavir,ingredient,yes,
+zalcitabine,ingredient,yes,
+zidovudine,ingredient,yes,
+agenerase,brand,yes,
+apretude,brand,no,Cabotegravir only
+aptivus,brand,yes,
+atripla,brand,yes,
+biktarvy,brand,yes,
+cabenuva,brand,yes,
+cimduo,brand,no,Lamivudine and tenofovir only
+combivir,brand,yes,
+complera,brand,yes,
+crixivan,brand,yes,
+delstrigo,brand,yes,
+descovy,brand,no,Emtricitabine and tenofovir only
+dovato,brand,yes,
+edurant,brand,yes,
+emtriva,brand,no,Emtricitabine only
+epivir,brand,no,Lamivudine only - protocol
+epzicom,brand,yes,
+evotaz,brand,yes,
+fortovase,brand,yes,
+fuzeon,brand,yes,
+genvoya,brand,yes,
+hivid,brand,yes,
+intelence,brand,yes,
+invirase,brand,yes,
+isentress,brand,yes,
+juluca,brand,yes,
+kaletra,brand,yes,
+lexiva,brand,yes,
+norvir,brand,no,Ritonavir only
+odefsey,brand,yes,
+pifeltro,brand,yes,
+prezcobix,brand,yes,
+prezista,brand,yes,
+pro 140,brand,yes,
+rescriptor,brand,yes,
+retrovir,brand,yes,
+reyataz,brand,yes,
+rukobia,brand,yes,
+selzentry,brand,yes,
+stribild,brand,yes,
+sunlenca,brand,no,Lenacapavir only
+sustiva,brand,yes,
+symfi,brand,yes,
+symtuza,brand,yes,
+temixys,brand,no,Lamivudine and tenofovir only
+tivicay,brand,yes,
+triumeq,brand,yes,
+trizivir,brand,yes,
+trogarzo,brand,yes,
+truvada,brand,no,Emtricitabine and tenofovir only
+tybost,brand,yes,
+vemlidy,brand,no,Tenofovir only
+videx,brand,yes,
+viracept,brand,yes,
+viramune,brand,yes,
+viread,brand,no,Tenofovir only
+vitekta,brand,yes,
+vocabria,brand,no,Cabotegravir only
+zerit,brand,yes,
+ziagen,brand,yes,

@@ -1,0 +1,116 @@
+analysis_year,variable,smd_before,smd_after
+2016,distance,1.166,0.003
+2016,birth_year,0.967,0.053
+2016,census_region: Midwest,-0.326,-0.019
+2016,census_region: Northeast,0.028,0.025
+2016,census_region: Other,,
+2016,census_region: South,0.133,-0.011
+2016,census_region: West,0.034,0.0
+2016,patient_race_ethnicity: ASIAN OR PACIFIC ISLANDER,-0.25,0.104
+2016,patient_race_ethnicity: BLACK OR AFRICAN AMERICAN,0.631,-0.032
+2016,patient_race_ethnicity: HISPANIC OR LATINO,-0.004,0.019
+2016,patient_race_ethnicity: OTHER,-0.008,0.099
+2016,patient_race_ethnicity: WHITE,-0.569,-0.032
+2017,distance,1.1,0.001
+2017,birth_year,0.765,0.018
+2017,census_region: Midwest,-0.595,0.019
+2017,census_region: Northeast,0.071,0.035
+2017,census_region: South,0.185,-0.051
+2017,census_region: West,0.099,0.013
+2017,patient_race_ethnicity: ASIAN OR PACIFIC ISLANDER,-0.314,0.102
+2017,patient_race_ethnicity: BLACK OR AFRICAN AMERICAN,0.575,0.01
+2017,patient_race_ethnicity: HISPANIC OR LATINO,-0.046,0.017
+2017,patient_race_ethnicity: OTHER,0.01,0.032
+2017,patient_race_ethnicity: WHITE,-0.478,-0.051
+2018,distance,1.048,0.002
+2018,birth_year,0.736,-0.023
+2018,census_region: Midwest,-0.551,0.019
+2018,census_region: Northeast,0.081,0.024
+2018,census_region: Other,,
+2018,census_region: South,0.243,-0.011
+2018,census_region: West,-0.006,-0.029
+2018,patient_race_ethnicity: ASIAN OR PACIFIC ISLANDER,-0.186,-0.043
+2018,patient_race_ethnicity: BLACK OR AFRICAN AMERICAN,0.58,0.011
+2018,patient_race_ethnicity: HISPANIC OR LATINO,0.088,0.048
+2018,patient_race_ethnicity: OTHER,-0.015,-0.033
+2018,patient_race_ethnicity: WHITE,-0.58,-0.022
+2019,distance,0.98,0.001
+2019,birth_year,0.622,-0.031
+2019,census_region: Midwest,-0.642,-0.018
+2019,census_region: Northeast,0.105,0.081
+2019,census_region: South,0.29,-0.031
+2019,census_region: West,-0.014,-0.043
+2019,patient_race_ethnicity: ASIAN OR PACIFIC ISLANDER,-0.067,-0.065
+2019,patient_race_ethnicity: BLACK OR AFRICAN AMERICAN,0.54,0.0
+2019,patient_race_ethnicity: HISPANIC OR LATINO,0.125,0.045
+2019,patient_race_ethnicity: OTHER,-0.031,0.033
+2019,patient_race_ethnicity: WHITE,-0.582,-0.021
+2020,distance,0.974,0.001
+2020,birth_year,0.527,-0.029
+2020,census_region: Midwest,-0.519,-0.034
+2020,census_region: Northeast,0.098,0.094
+2020,census_region: South,0.267,-0.063
+2020,census_region: West,-0.041,0.0
+2020,patient_race_ethnicity: ASIAN OR PACIFIC ISLANDER,-0.278,0.0
+2020,patient_race_ethnicity: BLACK OR AFRICAN AMERICAN,0.547,0.011
+2020,patient_race_ethnicity: HISPANIC OR LATINO,0.137,-0.03
+2020,patient_race_ethnicity: OTHER,-0.16,0.0
+2020,patient_race_ethnicity: WHITE,-0.534,0.011
+2021,distance,0.917,0.0
+2021,birth_year,0.541,0.003
+2021,census_region: Midwest,-0.438,0.016
+2021,census_region: Northeast,0.051,0.094
+2021,census_region: Other,,
+2021,census_region: South,0.26,-0.073
+2021,census_region: West,-0.027,-0.031
+2021,patient_race_ethnicity: ASIAN OR PACIFIC ISLANDER,-0.185,0.042
+2021,patient_race_ethnicity: BLACK OR AFRICAN AMERICAN,0.404,0.0
+2021,patient_race_ethnicity: HISPANIC OR LATINO,0.179,0.056
+2021,patient_race_ethnicity: OTHER,-0.183,0.042
+2021,patient_race_ethnicity: WHITE,-0.414,-0.063
+2022,distance,0.778,0.0
+2022,birth_year,0.431,-0.07
+2022,census_region: Midwest,-0.458,-0.031
+2022,census_region: Northeast,0.085,0.085
+2022,census_region: Other,,
+2022,census_region: South,0.253,0.019
+2022,census_region: West,-0.06,-0.109
+2022,patient_race_ethnicity: ASIAN OR PACIFIC ISLANDER,-0.165,0.031
+2022,patient_race_ethnicity: BLACK OR AFRICAN AMERICAN,0.309,-0.011
+2022,patient_race_ethnicity: HISPANIC OR LATINO,0.221,0.037
+2022,patient_race_ethnicity: OTHER,-0.155,-0.04
+2022,patient_race_ethnicity: WHITE,-0.352,-0.019
+2023,distance,0.716,-0.0
+2023,birth_year,0.391,-0.009
+2023,census_region: Midwest,-0.404,0.016
+2023,census_region: Northeast,0.11,0.102
+2023,census_region: South,0.239,-0.071
+2023,census_region: West,-0.119,-0.047
+2023,patient_race_ethnicity: ASIAN OR PACIFIC ISLANDER,-0.175,0.108
+2023,patient_race_ethnicity: BLACK OR AFRICAN AMERICAN,0.313,-0.012
+2023,patient_race_ethnicity: HISPANIC OR LATINO,0.156,0.028
+2023,patient_race_ethnicity: OTHER,-0.184,-0.083
+2023,patient_race_ethnicity: WHITE,-0.296,-0.02
+2024,distance,0.557,0.0
+2024,birth_year,0.233,-0.024
+2024,census_region: Midwest,-0.289,0.051
+2024,census_region: Northeast,0.073,0.078
+2024,census_region: South,0.17,-0.058
+2024,census_region: West,-0.053,-0.066
+2024,patient_race_ethnicity: ASIAN OR PACIFIC ISLANDER,-0.148,0.038
+2024,patient_race_ethnicity: BLACK OR AFRICAN AMERICAN,0.324,0.064
+2024,patient_race_ethnicity: HISPANIC OR LATINO,0.087,-0.017
+2024,patient_race_ethnicity: OTHER,-0.155,0.089
+2024,patient_race_ethnicity: WHITE,-0.267,-0.081
+2025,distance,0.728,0.001
+2025,birth_year,0.116,0.007
+2025,census_region: Midwest,-0.362,0.058
+2025,census_region: Northeast,0.089,0.082
+2025,census_region: Other,,
+2025,census_region: South,0.241,-0.127
+2025,census_region: West,-0.145,0.028
+2025,patient_race_ethnicity: ASIAN OR PACIFIC ISLANDER,-0.498,0.0
+2025,patient_race_ethnicity: BLACK OR AFRICAN AMERICAN,0.419,0.039
+2025,patient_race_ethnicity: HISPANIC OR LATINO,0.094,0.026
+2025,patient_race_ethnicity: OTHER,-0.129,0.136
+2025,patient_race_ethnicity: WHITE,-0.326,-0.091

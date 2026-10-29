@@ -1,0 +1,14 @@
+# Copy this file to config/local.yml and fill it in. config/local.yml is not committed.
+# Your password is never stored: the runner asks for it, or reads REDSHIFT_PASSWORD.
+
+redshift_user: your_redshift_username
+
+# Tables are written to work_<redshift_user> unless you set another schema here.
+# work_schema: work_your_redshift_username
+
+# Folder that holds the Redshift JDBC driver, for File 11 (R, DatabaseConnector).
+jdbc_driver_folder: D:/path/to/redshift/driver
+
+# Rscript command; use the full path if Rscript is not on your PATH,
+# for example C:/Program Files/R/R-4.4.1/bin/Rscript.exe
+rscript: Rscript

@@ -1,0 +1,54 @@
+# Study settings shared by everyone. Change a value here, not in the SQL.
+# Your own Redshift username and driver folder go in config/local.yml (not committed).
+
+run:
+  # Which people to run on, when no --profile is given:
+  #   sample_1pct   the repeatable ~1% sample of people (File 00); tables end in _s1
+  #   sample_30pct  the repeatable ~30% sample; tables end in _s30
+  #   full          everyone; tables have no suffix
+  # Each profile has its own tables and results/<profile>/ folder, so all three can run at once.
+  profile: sample_1pct
+
+redshift:
+  host: ohdsi-lab-redshift-cluster-prod.clsyktjhufn7.us-east-1.redshift.amazonaws.com
+  port: 5439
+  database: ohdsi_lab
+
+komodo_schema: komodo_202606
+
+# Each person-year is one calendar year, Jan 1 to Dec 31, with Dec 31 as the index date.
+# 2016 is the first full year of ICD-10 codes; 2025 is the last full year in the extract.
+study_years:
+  first: 2016
+  last: 2025
+
+pharmacy:
+  # A fill counts only when it is the final version of the claim and was paid
+  # (STANDALONE = never adjusted, FINAL = last version of an adjusted claim).
+  final_status: [FINAL, STANDALONE]
+  paid_result: PAID
+
+conditions:
+  # A person has a study condition in a year with at least this many inpatient claims,
+  # OR this many outpatient claims on different days. Code lists: reference/conditions.csv.
+  min_inpatient_claims: 1
+  min_outpatient_claims: 2
+
+matching:
+  # File 11 (MatchIt): within each year, exact on sex, propensity score from birth year,
+  # census region and race, nearest neighbour without replacement.
+  # ratio = controls per person with HIV: 1:1, as agreed with the PI (Oct 2026). With a ratio
+  # above 1, use the match weights (ps_matched.match_weight) for any average; the summaries do.
+  ratio: 1
+  # Maximum distance between matched people, in standard deviations of the score's logit.
+  caliper_sd: 0.2
+
+gagne:
+  # Care-quality results are also shown by Gagne level (score without the HIV/AIDS group).
+  # Each number is the top of a level: [0, 2, 4] gives "0 or less", "1-2", "3-4", "5+".
+  level_tops: [0, 2, 4]
+
+measures:
+  # How far back a measure may look for its numerator (the hearing screen looks back
+  # 5 years), so procedure and pharmacy claims are read from this many years before 2016.
+  lookback_years: 5

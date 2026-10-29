@@ -1,0 +1,11 @@
+step_order,step,people
+1,Everyone in Komodo,116000000
+2,"In this run (the 1% sample, or everyone)",1360000
+3,Aged 50 or older on Dec 31 and alive all year,517000
+4,"Medical and pharmacy closed all year, one medical and one pharmacy payer",70900
+5,"No missing birth date, sex, state or race (eligible)",64200
+6,People with HIV,190
+7,People without HIV (control pool),64000
+8,"Eligible but in neither group (HIV found in a later year, or not closed since the HIV date)",50
+9,People with HIV matched,190
+10,Matched controls,190

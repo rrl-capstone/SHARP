@@ -1,0 +1,121 @@
+measure_id,gagne_level,hiv,person_years,person_years_met,pct_met
+cad_acei_arb,0 or less,0,740,550,74.2
+cad_acei_arb,0 or less,1,440,310,70.3
+cad_acei_arb,1-2,0,1900,1430,75.3
+cad_acei_arb,1-2,1,1300,970,74.6
+cad_acei_arb,3-4,0,2460,1860,75.5
+cad_acei_arb,3-4,1,2310,1650,71.1
+cad_acei_arb,5+,0,5910,4030,68.3
+cad_acei_arb,5+,1,14800,9260,62.6
+copd_lama,0 or less,0,720,240,33.0
+copd_lama,0 or less,1,520,160,30.3
+copd_lama,1-2,0,2970,840,28.3
+copd_lama,1-2,1,3210,950,29.7
+copd_lama,3-4,0,2590,680,26.1
+copd_lama,3-4,1,3880,1070,27.6
+copd_lama,5+,0,4860,1200,24.7
+copd_lama,5+,1,13900,2800,20.2
+dementia_cognitive,0 or less,0,<11,0,
+dementia_cognitive,0 or less,1,<11,0,
+dementia_cognitive,1-2,0,270,<11,
+dementia_cognitive,1-2,1,210,<11,
+dementia_cognitive,3-4,0,540,20,2.8
+dementia_cognitive,3-4,1,500,<11,
+dementia_cognitive,5+,0,1590,30,1.9
+dementia_cognitive,5+,1,5060,60,1.2
+diabetes_poor_control,0 or less,0,9790,1130,11.6
+diabetes_poor_control,0 or less,1,5480,700,12.8
+diabetes_poor_control,1-2,0,10700,1370,12.8
+diabetes_poor_control,1-2,1,8860,1140,12.9
+diabetes_poor_control,3-4,0,6070,840,13.9
+diabetes_poor_control,3-4,1,7170,950,13.3
+diabetes_poor_control,5+,0,7230,1290,17.8
+diabetes_poor_control,5+,1,16100,3500,21.7
+diabetic_foot_exam,0 or less,0,9790,190,1.9
+diabetic_foot_exam,0 or less,1,5480,90,1.7
+diabetic_foot_exam,1-2,0,10700,280,2.6
+diabetic_foot_exam,1-2,1,8860,150,1.6
+diabetic_foot_exam,3-4,0,6070,170,2.8
+diabetic_foot_exam,3-4,1,7170,170,2.4
+diabetic_foot_exam,5+,0,7230,170,2.4
+diabetic_foot_exam,5+,1,16100,340,2.1
+eye_exam,0 or less,0,78800,21800,27.6
+eye_exam,0 or less,1,51400,15500,30.1
+eye_exam,1-2,0,40200,15300,38.2
+eye_exam,1-2,1,42100,16600,39.4
+eye_exam,3-4,0,15800,7350,46.4
+eye_exam,3-4,1,21900,10300,47.1
+eye_exam,5+,0,16200,7890,48.8
+eye_exam,5+,1,33900,17700,52.2
+gerd_alarm_endoscopy,0 or less,0,880,390,44.4
+gerd_alarm_endoscopy,0 or less,1,620,260,41.9
+gerd_alarm_endoscopy,1-2,0,1500,600,40.2
+gerd_alarm_endoscopy,1-2,1,1630,610,37.4
+gerd_alarm_endoscopy,3-4,0,1370,450,32.8
+gerd_alarm_endoscopy,3-4,1,1850,600,32.6
+gerd_alarm_endoscopy,5+,0,3150,980,31.2
+gerd_alarm_endoscopy,5+,1,12000,2610,21.7
+gerd_ppi,0 or less,0,4710,3160,67.1
+gerd_ppi,0 or less,1,2950,1910,64.5
+gerd_ppi,1-2,0,5270,3630,68.9
+gerd_ppi,1-2,1,5210,3410,65.4
+gerd_ppi,3-4,0,3340,2280,68.2
+gerd_ppi,3-4,1,4290,2820,65.7
+gerd_ppi,5+,0,4980,3510,70.5
+gerd_ppi,5+,1,15100,8920,58.9
+hearing_screen_50_64,0 or less,0,56700,2420,4.3
+hearing_screen_50_64,0 or less,1,39000,1740,4.5
+hearing_screen_50_64,1-2,0,24700,1350,5.5
+hearing_screen_50_64,1-2,1,28800,1500,5.2
+hearing_screen_50_64,3-4,0,7480,430,5.8
+hearing_screen_50_64,3-4,1,12700,800,6.3
+hearing_screen_50_64,5+,0,6300,330,5.3
+hearing_screen_50_64,5+,1,13600,870,6.4
+hearing_screen_65plus,0 or less,0,19800,780,3.9
+hearing_screen_65plus,0 or less,1,11100,430,3.9
+hearing_screen_65plus,1-2,0,13900,690,5.0
+hearing_screen_65plus,1-2,1,11800,610,5.2
+hearing_screen_65plus,3-4,0,7560,390,5.2
+hearing_screen_65plus,3-4,1,8370,450,5.4
+hearing_screen_65plus,5+,0,8820,490,5.6
+hearing_screen_65plus,5+,1,16500,1070,6.5
+htn_treated,0 or less,0,30700,28300,92.3
+htn_treated,0 or less,1,20100,18200,90.5
+htn_treated,1-2,0,20200,18700,92.8
+htn_treated,1-2,1,19600,17800,91.1
+htn_treated,3-4,0,11800,11100,93.9
+htn_treated,3-4,1,14400,13200,91.8
+htn_treated,5+,0,14600,13600,93.7
+htn_treated,5+,1,31000,28300,91.2
+oa_function_pain,0 or less,0,6490,20,0.2
+oa_function_pain,0 or less,1,3440,<11,
+oa_function_pain,1-2,0,5640,20,0.2
+oa_function_pain,1-2,1,4990,<11,
+oa_function_pain,3-4,0,3270,20,0.4
+oa_function_pain,3-4,1,3840,20,0.3
+oa_function_pain,5+,0,4470,20,0.3
+oa_function_pain,5+,1,13300,30,0.2
+oa_otc_meds,0 or less,0,6490,<11,
+oa_otc_meds,0 or less,1,3440,<11,
+oa_otc_meds,1-2,0,5640,<11,
+oa_otc_meds,1-2,1,4990,<11,
+oa_otc_meds,3-4,0,3270,<11,
+oa_otc_meds,3-4,1,3840,<11,
+oa_otc_meds,5+,0,4470,0,0.0
+oa_otc_meds,5+,1,13300,<11,
+ra_disease_activity,0 or less,0,710,<11,
+ra_disease_activity,0 or less,1,320,0,0.0
+ra_disease_activity,1-2,0,720,<11,
+ra_disease_activity,1-2,1,560,0,0.0
+ra_disease_activity,3-4,0,410,<11,
+ra_disease_activity,3-4,1,480,<11,
+ra_disease_activity,5+,0,630,<11,
+ra_disease_activity,5+,1,2640,<11,
+ra_glucocorticoid,0 or less,0,710,<11,
+ra_glucocorticoid,0 or less,1,320,0,0.0
+ra_glucocorticoid,1-2,0,720,<11,
+ra_glucocorticoid,1-2,1,560,0,0.0
+ra_glucocorticoid,3-4,0,410,<11,
+ra_glucocorticoid,3-4,1,480,0,0.0
+ra_glucocorticoid,5+,0,630,<11,
+ra_glucocorticoid,5+,1,2640,<11,

@@ -1,0 +1,24 @@
+# Secrets and personal settings: never commit
+.env
+config/local.yml
+
+# Python, build output and run logs
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.ipynb_checkpoints/
+build/
+*.log
+
+# Never commit row-level data. 11_ps_matching.R saves matched.rds (one row per matched
+# person-year) as a backup, and an R workspace can hold the whole ps_input table.
+*.rds
+.RData
+.Rhistory
+data/
+# ...except the website's aggregated results (built by python -m runner.site_data)
+!docs/data/
+*.parquet
+*.feather

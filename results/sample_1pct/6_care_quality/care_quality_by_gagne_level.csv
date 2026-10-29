@@ -1,0 +1,119 @@
+measure_id,gagne_level,hiv,person_years,person_years_met,pct_met
+cad_acei_arb,0 or less,0,<11,<11,
+cad_acei_arb,0 or less,1,<11,<11,
+cad_acei_arb,1-2,0,20,20,82.6
+cad_acei_arb,1-2,1,20,20,79.0
+cad_acei_arb,3-4,0,30,20,79.3
+cad_acei_arb,3-4,1,30,20,69.2
+cad_acei_arb,5+,0,70,50,68.1
+cad_acei_arb,5+,1,210,130,59.4
+copd_lama,0 or less,0,<11,<11,
+copd_lama,0 or less,1,<11,<11,
+copd_lama,1-2,0,40,<11,
+copd_lama,1-2,1,40,20,29.7
+copd_lama,3-4,0,40,<11,
+copd_lama,3-4,1,50,20,27.1
+copd_lama,5+,0,60,20,19.0
+copd_lama,5+,1,180,30,15.8
+dementia_cognitive,1-2,0,<11,0,
+dementia_cognitive,1-2,1,<11,0,
+dementia_cognitive,3-4,0,<11,0,
+dementia_cognitive,3-4,1,<11,0,
+dementia_cognitive,5+,0,20,<11,
+dementia_cognitive,5+,1,70,<11,
+diabetes_poor_control,0 or less,0,130,<11,
+diabetes_poor_control,0 or less,1,60,<11,
+diabetes_poor_control,1-2,0,120,20,16.4
+diabetes_poor_control,1-2,1,130,20,10.9
+diabetes_poor_control,3-4,0,80,<11,
+diabetes_poor_control,3-4,1,80,20,18.8
+diabetes_poor_control,5+,0,90,20,18.2
+diabetes_poor_control,5+,1,200,50,23.9
+diabetic_foot_exam,0 or less,0,130,<11,
+diabetic_foot_exam,0 or less,1,60,<11,
+diabetic_foot_exam,1-2,0,120,<11,
+diabetic_foot_exam,1-2,1,130,<11,
+diabetic_foot_exam,3-4,0,80,<11,
+diabetic_foot_exam,3-4,1,80,<11,
+diabetic_foot_exam,5+,0,90,<11,
+diabetic_foot_exam,5+,1,200,<11,
+eye_exam,0 or less,0,960,260,27.3
+eye_exam,0 or less,1,540,160,29.8
+eye_exam,1-2,0,450,190,41.5
+eye_exam,1-2,1,530,230,43.5
+eye_exam,3-4,0,210,110,52.1
+eye_exam,3-4,1,240,120,47.1
+eye_exam,5+,0,190,90,45.1
+eye_exam,5+,1,450,260,57.9
+gerd_alarm_endoscopy,0 or less,0,20,<11,
+gerd_alarm_endoscopy,0 or less,1,<11,<11,
+gerd_alarm_endoscopy,1-2,0,30,<11,
+gerd_alarm_endoscopy,1-2,1,20,<11,
+gerd_alarm_endoscopy,3-4,0,20,<11,
+gerd_alarm_endoscopy,3-4,1,30,<11,
+gerd_alarm_endoscopy,5+,0,30,20,41.2
+gerd_alarm_endoscopy,5+,1,190,40,23.8
+gerd_ppi,0 or less,0,70,50,71.8
+gerd_ppi,0 or less,1,30,20,67.9
+gerd_ppi,1-2,0,70,50,68.1
+gerd_ppi,1-2,1,70,60,81.7
+gerd_ppi,3-4,0,40,40,79.5
+gerd_ppi,3-4,1,60,40,63.2
+gerd_ppi,5+,0,60,40,61.0
+gerd_ppi,5+,1,220,130,59.5
+hearing_screen_50_64,0 or less,0,680,20,3.1
+hearing_screen_50_64,0 or less,1,390,<11,
+hearing_screen_50_64,1-2,0,250,20,5.6
+hearing_screen_50_64,1-2,1,370,20,5.7
+hearing_screen_50_64,3-4,0,90,<11,
+hearing_screen_50_64,3-4,1,140,<11,
+hearing_screen_50_64,5+,0,70,<11,
+hearing_screen_50_64,5+,1,180,20,6.7
+hearing_screen_65plus,0 or less,0,250,20,4.7
+hearing_screen_65plus,0 or less,1,150,<11,
+hearing_screen_65plus,1-2,0,180,<11,
+hearing_screen_65plus,1-2,1,150,<11,
+hearing_screen_65plus,3-4,0,110,<11,
+hearing_screen_65plus,3-4,1,100,20,11.5
+hearing_screen_65plus,5+,0,110,<11,
+hearing_screen_65plus,5+,1,230,20,8.3
+htn_treated,0 or less,0,390,360,92.5
+htn_treated,0 or less,1,200,190,93.1
+htn_treated,1-2,0,240,220,92.2
+htn_treated,1-2,1,260,240,89.7
+htn_treated,3-4,0,170,160,95.8
+htn_treated,3-4,1,140,130,94.2
+htn_treated,5+,0,160,150,94.5
+htn_treated,5+,1,410,380,91.5
+oa_function_pain,0 or less,0,80,<11,
+oa_function_pain,0 or less,1,30,0,0.0
+oa_function_pain,1-2,0,60,0,0.0
+oa_function_pain,1-2,1,70,0,0.0
+oa_function_pain,3-4,0,50,0,0.0
+oa_function_pain,3-4,1,30,0,0.0
+oa_function_pain,5+,0,50,0,0.0
+oa_function_pain,5+,1,180,0,0.0
+oa_otc_meds,0 or less,0,80,0,0.0
+oa_otc_meds,0 or less,1,30,0,0.0
+oa_otc_meds,1-2,0,60,0,0.0
+oa_otc_meds,1-2,1,70,0,0.0
+oa_otc_meds,3-4,0,50,0,0.0
+oa_otc_meds,3-4,1,30,0,0.0
+oa_otc_meds,5+,0,50,0,0.0
+oa_otc_meds,5+,1,180,0,0.0
+ra_disease_activity,0 or less,0,<11,0,
+ra_disease_activity,0 or less,1,<11,0,
+ra_disease_activity,1-2,0,<11,0,
+ra_disease_activity,1-2,1,<11,0,
+ra_disease_activity,3-4,0,<11,0,
+ra_disease_activity,3-4,1,<11,0,
+ra_disease_activity,5+,0,<11,0,
+ra_disease_activity,5+,1,40,0,0.0
+ra_glucocorticoid,0 or less,0,<11,0,
+ra_glucocorticoid,0 or less,1,<11,0,
+ra_glucocorticoid,1-2,0,<11,0,
+ra_glucocorticoid,1-2,1,<11,0,
+ra_glucocorticoid,3-4,0,<11,0,
+ra_glucocorticoid,3-4,1,<11,0,
+ra_glucocorticoid,5+,0,<11,0,
+ra_glucocorticoid,5+,1,40,0,0.0

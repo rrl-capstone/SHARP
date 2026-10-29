@@ -1,0 +1,16 @@
+measure_id,condition,label,denominator_all,denominator_any,denominator_none,min_age,max_age,numerator_any,lookback_years,missing_as_met,higher_is_better
+ra_disease_activity,Rheumatoid arthritis,Disease activity assessed,ra,,,50,120,ra_disease_activity,1,,1
+ra_glucocorticoid,Rheumatoid arthritis,Glucocorticoid use assessed,ra,,,50,120,ra_glucocorticoid_mgmt,1,,1
+oa_function_pain,Osteoarthritis,Function and pain assessed,oa,,,50,120,oa_function_pain,1,,1
+oa_otc_meds,Osteoarthritis,Over-the-counter pain medicine assessed,oa,,,50,120,oa_otc_assessed,1,,1
+dementia_cognitive,Dementia,Cognitive assessment,dementia,,,50,120,cognitive_assessment,1,,1
+diabetes_poor_control,Diabetes,HbA1c above 9% or not tested,diabetes,,,50,75,hba1c_gt9,1,hba1c_test,0
+gerd_ppi,GERD,On a proton pump inhibitor,gerd,,,50,120,ppi,1,,1
+gerd_alarm_endoscopy,GERD,Endoscopy when alarm symptoms,gerd+gerd_alarm,,,50,120,endoscopy,1,,1
+cad_acei_arb,Coronary artery disease,ACE inhibitor or ARB (with diabetes or weak heart),cad,diabetes|heart_failure|lvef_lt40,,50,120,acei_arb,1,,1
+htn_treated,Hypertension,On a blood pressure medicine or BP below 140/90,hypertension,,,50,120,antihypertensive|bp_sys_lt140+bp_dia_lt90,1,,1
+diabetic_foot_exam,Peripheral neuropathy,Lower-limb nerve exam (people with diabetes),diabetes,,,50,75,foot_neuro_exam,1,,1
+copd_lama,COPD,Long-acting inhaled anticholinergic,copd,,,50,120,lama,1,,1
+hearing_screen_50_64,Vision and hearing,Hearing screen in the last 5 years (50-64),,,hearing_loss,50,64,hearing_screen,5,,1
+hearing_screen_65plus,Vision and hearing,Hearing screen in the last 3 years (65+),,,hearing_loss,65,120,hearing_screen,3,,1
+eye_exam,Vision and hearing,Eye exam in the last 2 years,,,vision_loss,50,120,eye_exam,2,,1

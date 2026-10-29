@@ -1,0 +1,218 @@
+analysis_year,hiv,condition,label,person_years,person_years_with,pct_with_condition
+2016,0,cad,Coronary artery disease,64000,8060,12.6
+2016,1,cad,Coronary artery disease,190,20,12.8
+2016,0,copd,COPD,64000,5500,8.6
+2016,1,copd,COPD,190,20,8.6
+2016,0,dementia,Dementia,64000,1790,2.8
+2016,0,diabetes,Diabetes,64000,15000,23.5
+2016,1,diabetes,Diabetes,190,50,24.6
+2016,0,gerd,GERD,64000,8010,12.5
+2016,1,gerd,GERD,190,20,11.8
+2016,0,hearing_loss,Hearing loss,64000,3720,5.8
+2016,1,hearing_loss,Hearing loss,190,<11,
+2016,0,hypertension,Hypertension,64000,33200,51.8
+2016,1,hypertension,Hypertension,190,90,47.6
+2016,0,neuropathy,Peripheral neuropathy,64000,4380,6.8
+2016,1,neuropathy,Peripheral neuropathy,190,30,13.4
+2016,0,oa,Osteoarthritis,64000,9470,14.8
+2016,1,oa,Osteoarthritis,190,20,10.7
+2016,0,ra,Rheumatoid arthritis,64000,1220,1.9
+2016,1,ra,Rheumatoid arthritis,190,<11,
+2016,0,vision_loss,Vision loss,64000,910,1.4
+2016,1,vision_loss,Vision loss,190,<11,
+2017,0,cad,Coronary artery disease,100000,12900,12.8
+2017,1,cad,Coronary artery disease,200,30,15.7
+2017,0,copd,COPD,100000,8760,8.7
+2017,1,copd,COPD,200,20,12.2
+2017,0,dementia,Dementia,100000,2900,2.9
+2017,1,dementia,Dementia,200,<11,
+2017,0,diabetes,Diabetes,100000,23500,23.3
+2017,1,diabetes,Diabetes,200,60,28.4
+2017,0,gerd,GERD,100000,12800,12.7
+2017,1,gerd,GERD,200,30,14.2
+2017,0,hearing_loss,Hearing loss,100000,6420,6.4
+2017,1,hearing_loss,Hearing loss,200,<11,
+2017,0,hypertension,Hypertension,100000,51900,51.6
+2017,1,hypertension,Hypertension,200,110,53.8
+2017,0,neuropathy,Peripheral neuropathy,100000,6940,6.9
+2017,1,neuropathy,Peripheral neuropathy,200,30,12.7
+2017,0,oa,Osteoarthritis,100000,15100,15.0
+2017,1,oa,Osteoarthritis,200,20,12.2
+2017,0,ra,Rheumatoid arthritis,100000,2010,2.0
+2017,0,vision_loss,Vision loss,100000,1460,1.4
+2017,1,vision_loss,Vision loss,200,<11,
+2018,0,cad,Coronary artery disease,111000,14300,12.8
+2018,1,cad,Coronary artery disease,190,30,15.7
+2018,0,copd,COPD,111000,9910,8.9
+2018,1,copd,COPD,190,20,12.4
+2018,0,dementia,Dementia,111000,3210,2.9
+2018,1,dementia,Dementia,190,<11,
+2018,0,diabetes,Diabetes,111000,25800,23.2
+2018,1,diabetes,Diabetes,190,50,28.1
+2018,0,gerd,GERD,111000,14500,13.0
+2018,1,gerd,GERD,190,30,13.5
+2018,0,hearing_loss,Hearing loss,111000,7530,6.8
+2018,1,hearing_loss,Hearing loss,190,20,6.0
+2018,0,hypertension,Hypertension,111000,57600,51.7
+2018,1,hypertension,Hypertension,190,100,53.0
+2018,0,neuropathy,Peripheral neuropathy,111000,8120,7.3
+2018,1,neuropathy,Peripheral neuropathy,190,20,11.9
+2018,0,oa,Osteoarthritis,111000,17200,15.4
+2018,1,oa,Osteoarthritis,190,20,7.6
+2018,0,ra,Rheumatoid arthritis,111000,2230,2.0
+2018,0,vision_loss,Vision loss,111000,1550,1.4
+2018,1,vision_loss,Vision loss,190,<11,
+2019,0,cad,Coronary artery disease,146000,19500,13.3
+2019,1,cad,Coronary artery disease,190,40,18.2
+2019,0,copd,COPD,146000,13200,9.0
+2019,1,copd,COPD,190,30,15.6
+2019,0,dementia,Dementia,146000,4380,3.0
+2019,1,dementia,Dementia,190,<11,
+2019,0,diabetes,Diabetes,146000,34500,23.6
+2019,1,diabetes,Diabetes,190,60,30.2
+2019,0,gerd,GERD,146000,20400,14.0
+2019,1,gerd,GERD,190,40,19.8
+2019,0,hearing_loss,Hearing loss,146000,9930,6.8
+2019,1,hearing_loss,Hearing loss,190,<11,
+2019,0,hypertension,Hypertension,146000,76700,52.5
+2019,1,hypertension,Hypertension,190,110,54.7
+2019,0,neuropathy,Peripheral neuropathy,146000,11200,7.7
+2019,1,neuropathy,Peripheral neuropathy,190,30,14.6
+2019,0,oa,Osteoarthritis,146000,23800,16.3
+2019,1,oa,Osteoarthritis,190,30,14.1
+2019,0,ra,Rheumatoid arthritis,146000,3030,2.1
+2019,1,ra,Rheumatoid arthritis,190,<11,
+2019,0,vision_loss,Vision loss,146000,2200,1.5
+2019,1,vision_loss,Vision loss,190,<11,
+2020,0,cad,Coronary artery disease,152000,19400,12.8
+2020,1,cad,Coronary artery disease,190,40,21.6
+2020,0,copd,COPD,152000,13300,8.7
+2020,1,copd,COPD,190,30,13.7
+2020,0,dementia,Dementia,152000,4380,2.9
+2020,1,dementia,Dementia,190,<11,
+2020,0,diabetes,Diabetes,152000,35200,23.2
+2020,1,diabetes,Diabetes,190,60,31.1
+2020,0,gerd,GERD,152000,20400,13.4
+2020,1,gerd,GERD,190,40,22.1
+2020,0,hearing_loss,Hearing loss,152000,9080,6.0
+2020,1,hearing_loss,Hearing loss,190,20,5.8
+2020,0,hypertension,Hypertension,152000,76600,50.5
+2020,1,hypertension,Hypertension,190,100,53.7
+2020,0,neuropathy,Peripheral neuropathy,152000,11300,7.4
+2020,1,neuropathy,Peripheral neuropathy,190,30,16.3
+2020,0,oa,Osteoarthritis,152000,22300,14.7
+2020,1,oa,Osteoarthritis,190,30,15.3
+2020,0,ra,Rheumatoid arthritis,152000,3100,2.0
+2020,1,ra,Rheumatoid arthritis,190,<11,
+2020,0,vision_loss,Vision loss,152000,2110,1.4
+2020,1,vision_loss,Vision loss,190,<11,
+2021,0,cad,Coronary artery disease,170000,22500,13.2
+2021,1,cad,Coronary artery disease,190,40,19.9
+2021,0,copd,COPD,170000,14700,8.6
+2021,1,copd,COPD,190,30,16.8
+2021,0,dementia,Dementia,170000,4980,2.9
+2021,1,dementia,Dementia,190,<11,
+2021,0,diabetes,Diabetes,170000,40200,23.6
+2021,1,diabetes,Diabetes,190,60,31.9
+2021,0,gerd,GERD,170000,24100,14.1
+2021,1,gerd,GERD,190,40,19.9
+2021,0,hearing_loss,Hearing loss,170000,11700,6.9
+2021,1,hearing_loss,Hearing loss,190,<11,
+2021,0,hypertension,Hypertension,170000,89000,52.2
+2021,1,hypertension,Hypertension,190,100,50.3
+2021,0,neuropathy,Peripheral neuropathy,170000,13100,7.7
+2021,1,neuropathy,Peripheral neuropathy,190,30,14.1
+2021,0,oa,Osteoarthritis,170000,26800,15.7
+2021,1,oa,Osteoarthritis,190,40,19.4
+2021,0,ra,Rheumatoid arthritis,170000,3660,2.1
+2021,1,ra,Rheumatoid arthritis,190,<11,
+2021,0,vision_loss,Vision loss,170000,2650,1.6
+2021,1,vision_loss,Vision loss,190,20,6.8
+2022,0,cad,Coronary artery disease,171000,21800,12.8
+2022,1,cad,Coronary artery disease,210,40,20.7
+2022,0,copd,COPD,171000,14100,8.3
+2022,1,copd,COPD,210,30,14.9
+2022,0,dementia,Dementia,171000,4770,2.8
+2022,1,dementia,Dementia,210,20,5.3
+2022,0,diabetes,Diabetes,171000,39900,23.4
+2022,1,diabetes,Diabetes,210,70,33.6
+2022,0,gerd,GERD,171000,23300,13.6
+2022,1,gerd,GERD,210,50,23.1
+2022,0,hearing_loss,Hearing loss,171000,11600,6.8
+2022,1,hearing_loss,Hearing loss,210,20,9.1
+2022,0,hypertension,Hypertension,171000,86700,50.8
+2022,1,hypertension,Hypertension,210,130,60.6
+2022,0,neuropathy,Peripheral neuropathy,171000,13000,7.6
+2022,1,neuropathy,Peripheral neuropathy,210,40,17.8
+2022,0,oa,Osteoarthritis,171000,26500,15.5
+2022,1,oa,Osteoarthritis,210,50,21.6
+2022,0,ra,Rheumatoid arthritis,171000,3580,2.1
+2022,1,ra,Rheumatoid arthritis,210,<11,
+2022,0,vision_loss,Vision loss,171000,2250,1.3
+2022,1,vision_loss,Vision loss,210,<11,
+2023,0,cad,Coronary artery disease,153000,21000,13.7
+2023,1,cad,Coronary artery disease,200,40,21.3
+2023,0,copd,COPD,153000,13500,8.8
+2023,1,copd,COPD,200,40,17.8
+2023,0,dementia,Dementia,153000,4580,3.0
+2023,1,dementia,Dementia,200,20,8.1
+2023,0,diabetes,Diabetes,153000,37400,24.4
+2023,1,diabetes,Diabetes,200,70,35.5
+2023,0,gerd,GERD,153000,22100,14.4
+2023,1,gerd,GERD,200,50,26.4
+2023,0,hearing_loss,Hearing loss,153000,11300,7.4
+2023,1,hearing_loss,Hearing loss,200,20,10.7
+2023,0,hypertension,Hypertension,153000,80900,52.8
+2023,1,hypertension,Hypertension,200,120,61.4
+2023,0,neuropathy,Peripheral neuropathy,153000,12700,8.3
+2023,1,neuropathy,Peripheral neuropathy,200,40,19.3
+2023,0,oa,Osteoarthritis,153000,25100,16.4
+2023,1,oa,Osteoarthritis,200,40,20.3
+2023,0,ra,Rheumatoid arthritis,153000,3460,2.2
+2023,1,ra,Rheumatoid arthritis,200,20,6.6
+2023,0,vision_loss,Vision loss,153000,2020,1.3
+2023,1,vision_loss,Vision loss,200,<11,
+2024,0,cad,Coronary artery disease,138000,20200,14.7
+2024,1,cad,Coronary artery disease,170,30,17.9
+2024,0,copd,COPD,138000,12600,9.2
+2024,1,copd,COPD,170,30,19.1
+2024,0,dementia,Dementia,138000,4360,3.2
+2024,1,dementia,Dementia,170,20,11.0
+2024,0,diabetes,Diabetes,138000,35200,25.6
+2024,1,diabetes,Diabetes,170,70,39.3
+2024,0,gerd,GERD,138000,20400,14.8
+2024,1,gerd,GERD,170,50,28.9
+2024,0,hearing_loss,Hearing loss,138000,11300,8.2
+2024,1,hearing_loss,Hearing loss,170,20,8.7
+2024,0,hypertension,Hypertension,138000,75400,54.8
+2024,1,hypertension,Hypertension,170,110,61.9
+2024,0,neuropathy,Peripheral neuropathy,138000,12100,8.8
+2024,1,neuropathy,Peripheral neuropathy,170,30,17.3
+2024,0,oa,Osteoarthritis,138000,23300,16.9
+2024,1,oa,Osteoarthritis,170,40,25.4
+2024,0,ra,Rheumatoid arthritis,138000,3220,2.3
+2024,1,ra,Rheumatoid arthritis,170,20,6.9
+2024,0,vision_loss,Vision loss,138000,1710,1.2
+2024,1,vision_loss,Vision loss,170,<11,
+2025,0,cad,Coronary artery disease,102000,16100,15.8
+2025,1,cad,Coronary artery disease,110,30,26.4
+2025,0,copd,COPD,102000,9800,9.6
+2025,1,copd,COPD,110,20,20.9
+2025,0,dementia,Dementia,102000,3550,3.5
+2025,1,dementia,Dementia,110,<11,
+2025,0,diabetes,Diabetes,102000,27200,26.8
+2025,1,diabetes,Diabetes,110,40,38.2
+2025,0,gerd,GERD,102000,15500,15.3
+2025,1,gerd,GERD,110,30,27.3
+2025,0,hearing_loss,Hearing loss,102000,8470,8.3
+2025,1,hearing_loss,Hearing loss,110,20,14.6
+2025,0,hypertension,Hypertension,102000,57800,56.8
+2025,1,hypertension,Hypertension,110,60,58.2
+2025,0,neuropathy,Peripheral neuropathy,102000,9340,9.2
+2025,1,neuropathy,Peripheral neuropathy,110,20,16.4
+2025,0,oa,Osteoarthritis,102000,17800,17.6
+2025,1,oa,Osteoarthritis,110,30,29.1
+2025,0,ra,Rheumatoid arthritis,102000,2590,2.5
+2025,1,ra,Rheumatoid arthritis,110,<11,
+2025,0,vision_loss,Vision loss,102000,1260,1.2
+2025,1,vision_loss,Vision loss,110,<11,

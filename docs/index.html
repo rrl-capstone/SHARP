@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Care quality with and without HIV</title>
+  <meta name="description" content="Aggregated results of the OHDSI-3 capstone pipeline: adults aged 50 and older in Komodo Health claims, 2016 to 2025, people with HIV and matched people without HIV.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='11' cy='16' r='9' fill='%231B4B85'/%3E%3Ccircle cx='21' cy='16' r='9' fill='%237BA2D6' stroke='%23F6F8FB' stroke-width='2'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400..700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+  <link rel="stylesheet" href="assets/site.css">
+  <script defer src="assets/charts.js"></script>
+  <script defer src="assets/site.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to the results</a>
+
+  <div class="layout">
+    <aside class="sidebar" aria-label="Site">
+      <a class="brand" href="#top">
+        <svg class="brand-mark" viewBox="0 0 32 20" aria-hidden="true"><circle cx="10" cy="10" r="8" fill="#1B4B85"/><circle cx="22" cy="10" r="8" fill="#7BA2D6" stroke="#F6F8FB" stroke-width="2"/></svg>
+        <span class="brand-name">OHDSI-3</span>
+        <span class="brand-lab">Olivieri-Mui Lab, Northeastern University</span>
+      </a>
+      <nav class="rail" aria-label="Pipeline steps">
+        <ol>
+          <li><a href="#top"><span class="n"></span>Overview</a></li>
+          <li><a href="#eligible"><span class="n">1</span>Eligible people</a></li>
+          <li><a href="#groups"><span class="n">2</span>HIV and controls</a></li>
+          <li><a href="#before"><span class="n">3</span>Conditions before matching</a></li>
+          <li><a href="#matching"><span class="n">4</span>Matching</a></li>
+          <li><a href="#after"><span class="n">5</span>Conditions after matching</a></li>
+          <li><a href="#gagne"><span class="n">6</span>How sick: Gagne score</a></li>
+          <li><a href="#care"><span class="n">7</span>Care quality</a></li>
+          <li><a href="#methods"><span class="n"></span>Methods</a></li>
+        </ol>
+      </nav>
+      <div class="profile-picker">
+        <span id="profile-label" class="control-label">Results for</span>
+        <div class="segmented" role="radiogroup" aria-labelledby="profile-label">
+          <label><input type="radio" name="profile" value="full" checked><span>Full cohort</span></label>
+          <label><input type="radio" name="profile" value="sample_30pct"><span>30% sample</span></label>
+          <label><input type="radio" name="profile" value="sample_1pct"><span>1% sample</span></label>
+        </div>
+        <p class="status" id="status" role="status"></p>
+      </div>
+    </aside>
+
+    <main id="main" tabindex="-1" aria-busy="true">
+      <div class="content">
+        <section class="section hero" id="top" aria-labelledby="title">
+          <div class="hero-icons" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><g transform="rotate(-35 12 12)"><rect x="3" y="8.5" width="18" height="7" rx="3.5"/><line x1="12" y1="8.5" x2="12" y2="15.5"/></g></svg>
+            <svg viewBox="0 0 24 24"><polyline points="2,12 7,12 9,7 12,17 14.5,9 16.5,12 22,12"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M9.5 3.5h5v6h6v5h-6v6h-5v-6h-6v-5h6z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M8 3c0 4.5 8 4.5 8 9s-8 4.5-8 9"/><path d="M16 3c0 4.5-8 4.5-8 9s8 4.5 8 9"/><line x1="9" y1="6" x2="15" y2="6"/><line x1="9" y1="18" x2="15" y2="18"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M6 3v5.5a5 5 0 0 0 10 0V3"/><path d="M11 13.5V16a4.5 4.5 0 0 0 9 0v-2.5"/><circle cx="20" cy="11.5" r="2"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 20s-7.5-4.5-7.5-10.2A4.3 4.3 0 0 1 12 7a4.3 4.3 0 0 1 7.5 2.8C19.5 15.5 12 20 12 20z"/></svg>
+            <svg viewBox="0 0 24 24"><path d="M12 20s-7.5-4.5-7.5-10.2A4.3 4.3 0 0 1 12 7a4.3 4.3 0 0 1 7.5 2.8C19.5 15.5 12 20 12 20z"/></svg>
+          </div>
+          <h1 id="title">Care quality in people with and without HIV, aged 50 and older</h1>
+          <p class="lede">Komodo Health insurance claims from 2016 to 2025, one year at a time. We find who has HIV, match each person with HIV to a similar person without HIV, compare their chronic conditions and how sick they are, and check how often those conditions get the recommended care.</p>
+          <div class="section-body" data-part="overview"><p class="loading-note">Loading the results&hellip;</p></div>
+          <noscript><p class="error-panel">This site draws its charts with JavaScript. Turn it on, or read the result tables in the repository's results folder.</p></noscript>
+        </section>
+
+        <section class="section" id="eligible" aria-labelledby="h-eligible">
+          <h2 id="h-eligible"><span class="n">1</span>Eligible people</h2>
+          <p class="lede">A person-year counts when the person is 50 or older on December 31, alive all year, covered for medical and pharmacy claims all year by one payer for each, and has a birth date, sex, state and race on record.</p>
+          <div class="section-body" data-part="eligible"></div>
+        </section>
+
+        <section class="section" id="groups" aria-labelledby="h-groups">
+          <h2 id="h-groups"><span class="n">2</span>People with HIV and the control pool</h2>
+          <p class="lede">A person has HIV from the first year any of three routes is met: an inpatient HIV diagnosis, two outpatient HIV diagnoses at least seven days apart, or two fills of HIV medicines within 90 days. Medicines that are also used for PrEP, hepatitis B or COVID-19 (lamivudine, ritonavir, tenofovir, emtricitabine, cabotegravir, lenacapavir) do not count on their own. Everyone else who is eligible is in the control pool.</p>
+          <div class="section-body" data-part="groups"></div>
+        </section>
+
+        <section class="section" id="before" aria-labelledby="h-before">
+          <h2 id="h-before"><span class="n">3</span>Conditions before matching</h2>
+          <p class="lede">Each person-year is checked for 11 chronic conditions, each counted with at least one inpatient claim or two outpatient claims in the year. Here people with HIV are compared with the whole control pool.</p>
+          <div class="section-body" data-part="before"></div>
+        </section>
+
+        <section class="section" id="matching" aria-labelledby="h-matching">
+          <h2 id="h-matching"><span class="n">4</span>Propensity score matching</h2>
+          <p class="lede">Each year, every person with HIV is matched to one person without HIV of the same sex with the closest propensity score, which comes from birth year, census region and race. A match has to be within 0.2 standard deviations of the score's logit, and no control is used twice in a year.</p>
+          <div class="section-body" data-part="matching"></div>
+        </section>
+
+        <section class="section" id="after" aria-labelledby="h-after">
+          <h2 id="h-after"><span class="n">5</span>Conditions after matching</h2>
+          <p class="lede">The same 11 conditions, now in people with HIV and their matched controls, who share their sex and are close in age, region and race.</p>
+          <div class="section-body" data-part="after"></div>
+        </section>
+
+        <section class="section" id="gagne" aria-labelledby="h-gagne">
+          <h2 id="h-gagne"><span class="n">6</span>How sick: the Gagne score</h2>
+          <p class="lede">The Gagne combined comorbidity score adds a weight for each of 20 groups of diagnoses in the year, from &minus;1 for hypertension to 5 for metastatic cancer. HIV/AIDS is one of the groups, with a weight of &minus;1, so the fair comparison leaves it out.</p>
+          <div class="section-body" data-part="gagne"></div>
+        </section>
+
+        <section class="section" id="care" aria-labelledby="h-care">
+          <h2 id="h-care"><span class="n">7</span>Care quality</h2>
+          <p class="lede">For each condition, the share of person-years in which the person got the recommended care, in the matched groups. Each year is calculated on its own. Comparing within Gagne levels sets people with HIV against controls who are about as sick.</p>
+          <div class="section-body" data-part="care"></div>
+        </section>
+
+        <section class="section methods" id="methods" aria-labelledby="h-methods">
+          <h2 id="h-methods">Methods and how to read this site</h2>
+          <div class="section-body" data-part="run"></div>
+          <div class="prose">
+            <h3>Three runs</h3>
+            <p>The full cohort is the result. The 1% and 30% samples were used to test the pipeline. Each sample is a fixed set of people chosen by a hash of the patient ID, so the 1% sample is inside the 30% one and the same people are picked every time.</p>
+            <h3>Small numbers are hidden</h3>
+            <p>Only aggregated counts leave the database, and no exact count is published. Any count from 1 to 10 is shown as &lt;11 and the percentages on that row are hidden. Every other count is rounded to the nearest 10 (the smallest shown is 20), and percentages to one decimal, so a hidden count cannot be worked out by subtracting other numbers from a total. Zeros are shown as zeros.</p>
+            <h3>Provisional</h3>
+            <p>The HIV medicine rules, the condition code lists and the care quality codes are still being reviewed with the principal investigator, so treat every number here as provisional.</p>
+            <h3>Matching</h3>
+            <p>The propensity score is a logistic regression of HIV status on birth year, census region and race, fitted once for each year on every person with HIV and 20 randomly chosen controls of the same year and sex. Matching is exact on sex and one to one, nearest neighbour on the logit of the score, highest scores first, without replacement within a year. Balance is the standardized mean difference, scaled by the standard deviation in the HIV group.</p>
+            <h3>Gagne score and care quality</h3>
+            <p>The Gagne score uses Nemo Zhou's ICD-10-CM lookups; a diagnosis counts in the calendar year it falls in. Care quality measures look back further where the measure needs it, for example an eye exam in the last two years.</p>
+            <h3>Code and credits</h3>
+            <p>The cohort, the HIV groups and the matching method follow Lifei's code; the Gagne score follows Rhea's code. Group 3, fall 2026 capstone, with the Olivieri-Mui Lab at Northeastern University. The code and every result table are in the <a href="https://github.com/nucapstone/SHARP">SHARP repository</a>. After a new run, rebuild this site's data with <span class="command">python -m runner.site_data</span>.</p>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p>Aggregated results only, with no person-level data. Counts from 1 to 10 are shown as &lt;11, and all other counts are rounded to the nearest 10.</p>
+  </footer>
+</body>
+</html>

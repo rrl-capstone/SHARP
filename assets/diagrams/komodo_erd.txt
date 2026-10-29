@@ -1,0 +1,90 @@
+erDiagram                                                                                                         
+    %% all keys and joins are inferred from column names                                                          
+    komodo_202606__inpatient_events {                                                                             
+        string utilization_id                                                                                     
+        string visit_id FK                                                                                        
+        string patient_id FK                                                                                      
+    }                                                                                                             
+    komodo_202606__non_inpatient_events {                                                                         
+        string utilization_id FK                                                                                  
+        string visit_id FK                                                                                        
+        string patient_id FK                                                                                      
+        string procedure_code FK                                                                                  
+        string ndc11 FK                                                                                           
+        string bill_type_code FK                                                                                  
+    }                                                                                                             
+    komodo_202606__normalized_dx_events {                                                                         
+        string patient_id FK                                                                                      
+    }                                                                                                             
+    komodo_202606__normalized_procedure_events {                                                                  
+        string patient_id FK                                                                                      
+        string visit_id FK                                                                                        
+    }                                                                                                             
+    komodo_202606__patient_closed {                                                                               
+        string patient_id FK                                                                                      
+    }                                                                                                             
+    komodo_202606__patient_demographics {                                                                         
+        string patient_id FK                                                                                      
+    }                                                                                                             
+    komodo_202606__patient_geography {                                                                            
+        string patient_id FK                                                                                      
+    }                                                                                                             
+    komodo_202606__patient_insurance {                                                                            
+        string patient_id FK                                                                                      
+    }                                                                                                             
+    komodo_202606__patient_mortality {                                                                            
+        string patient_id                                                                                         
+    }                                                                                                             
+    komodo_202606__patient_race_ethnicity {                                                                       
+        string patient_id FK                                                                                      
+    }                                                                                                             
+    komodo_202606__pharmacy_events {                                                                              
+        string pharmacy_event_id PK                                                                               
+        string patient_id FK                                                                                      
+    }                                                                                                             
+    komodo_202606__providers {                                                                                    
+        string npi                                                                                                
+    }                                                                                                             
+    komodo_referance__drug_reference {                                                                            
+        string code                                                                                               
+    }                                                                                                             
+    komodo_referance__hcpcs_reference {                                                                           
+        string code                                                                                               
+    }                                                                                                             
+    komodo_referance__icd10pcs_reference {                                                                        
+        string code                                                                                               
+    }                                                                                                             
+    komodo_referance__icd9_proc_reference {                                                                       
+        string code                                                                                               
+    }                                                                                                             
+    komodo_referance__icd_diagnosis_reference {                                                                   
+        string code                                                                                               
+    }                                                                                                             
+    komodo_referance__komodo_hcpt_reference {                                                                     
+        string code                                                                                               
+    }                                                                                                             
+    komodo_referance__komodo_nppes_reference {                                                                    
+        string active_npi                                                                                         
+        string npi FK                                                                                             
+    }                                                                                                             
+    komodo_referance__nucc_taxonomy_reference {                                                                   
+        string classification                                                                                     
+    }                                                                                                             
+    komodo_202606__normalized_dx_events ||..o{ komodo_202606__inpatient_events : "visit_id (low)"                 
+    komodo_202606__patient_mortality ||..o{ komodo_202606__inpatient_events : "patient_id (low)"                  
+    komodo_202606__pharmacy_events ||..o{ komodo_202606__non_inpatient_events : "ndc11 (low)"                     
+    komodo_202606__normalized_dx_events ||..o{ komodo_202606__non_inpatient_events : "visit_id (low)"             
+    komodo_202606__patient_mortality ||..o{ komodo_202606__non_inpatient_events : "patient_id (low)"              
+    komodo_202606__normalized_procedure_events ||..o{ komodo_202606__non_inpatient_events : "procedure_code (low)"
+    komodo_202606__inpatient_events ||..o{ komodo_202606__non_inpatient_events : "bill_type_code (low)"           
+    komodo_202606__inpatient_events ||..o{ komodo_202606__non_inpatient_events : "utilization_id (low)"           
+    komodo_202606__patient_mortality ||..o{ komodo_202606__normalized_dx_events : "patient_id (low)"              
+    komodo_202606__normalized_dx_events ||..o{ komodo_202606__normalized_procedure_events : "visit_id (low)"      
+    komodo_202606__patient_mortality ||..o{ komodo_202606__normalized_procedure_events : "patient_id (low)"       
+    komodo_202606__patient_mortality ||..o{ komodo_202606__patient_closed : "patient_id (low)"                    
+    komodo_202606__patient_mortality ||..o{ komodo_202606__patient_demographics : "patient_id (low)"              
+    komodo_202606__patient_mortality ||..o{ komodo_202606__patient_geography : "patient_id (low)"                 
+    komodo_202606__patient_mortality ||..o{ komodo_202606__patient_insurance : "patient_id (low)"                 
+    komodo_202606__patient_mortality ||..o{ komodo_202606__patient_race_ethnicity : "patient_id (low)"            
+    komodo_202606__patient_mortality ||..o{ komodo_202606__pharmacy_events : "patient_id (low)"                   
+    komodo_202606__providers ||..o{ komodo_referance__komodo_nppes_reference : "npi (low)"                        

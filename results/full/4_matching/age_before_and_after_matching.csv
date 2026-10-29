@@ -1,0 +1,5 @@
+stage,hiv,person_years,mean_age
+before,0,111000000,67.96
+before,1,153000,62.63
+after,0,153000,62.63
+after,1,153000,62.63
