@@ -338,7 +338,30 @@ function lineChart(container, { x, series, format, endFormat = format, axisForma
 
 // rows: [{ label, values: { [series.key]: value }, extra: [[label, text]] }] or [{ heading }].
 // series: [{ key, label, color, style: "dot" | "ring" }].
-function dotRows(container, { rows, series, format, axisFormat = format, domain, ref, band, label, aside, asideLabel, xTitle }) {
+// Each value next to its own dot: the lower on the left and the higher on the right when both fit,
+// otherwise both on the side with room, lower first. pts are sorted by value; a series may carry
+// `tag`, the text color for its value.
+function valueTags(pts, xs, cy, format, x0, x1) {
+  const gap = 11;
+  const tag = (p, x, anchor) => s("text", { class: "value-tag", x, y: cy, "text-anchor": anchor, "dominant-baseline": "middle",
+    style: p.se.tag ? `fill: ${p.se.tag}` : null, text: format(p.v) });
+  const lo = pts[0];
+  const hi = pts[pts.length - 1];
+  const loW = textWidth(format(lo.v), 12);
+  const hiW = textWidth(format(hi.v), 12);
+  const leftRoom = xs(lo.v) - gap - x0;
+  const rightRoom = x1 + 8 - (xs(hi.v) + gap);
+  if (pts.length === 1) return [rightRoom >= hiW ? tag(hi, xs(hi.v) + gap, "start") : tag(hi, xs(hi.v) - gap, "end")];
+  if (leftRoom >= loW && rightRoom >= hiW) return [tag(lo, xs(lo.v) - gap, "end"), tag(hi, xs(hi.v) + gap, "start")];
+  if (rightRoom >= loW + 8 + hiW || rightRoom >= leftRoom) {
+    const x = xs(hi.v) + gap;
+    return [tag(lo, x, "start"), tag(hi, x + loW + 8, "start")];
+  }
+  const x = xs(lo.v) - gap;
+  return [tag(lo, x - hiW - 8, "end"), tag(hi, x, "end")];
+}
+
+function dotRows(container, { rows, series, format, axisFormat = format, domain, ref, band, label, aside, asideLabel, xTitle, valueLabels }) {
   responsive(container, (width) => {
     const present = rows.flatMap((r) => (r.heading ? [] : series.map((se) => r.values[se.key]).filter(isNum)));
     if (!present.length) return emptyNote();
@@ -352,7 +375,8 @@ function dotRows(container, { rows, series, format, axisFormat = format, domain,
     const x1 = width - asideW - 14;
     const xs = (v) => x0 + ((Math.max(lo, Math.min(hi, v)) - lo) / (hi - lo)) * (x1 - x0);
     const maxChars = Math.max(14, Math.floor((narrow ? width - 20 : labelW - 8) / (14 * 0.56)));
-    const firstY = asideLabel ? 24 : 4;
+    const topAxis = rows.length > 8;
+    const firstY = asideLabel || topAxis ? 26 : 4;
     const layout = [];
     let y = firstY;
     for (const row of rows) {
@@ -375,6 +399,7 @@ function dotRows(container, { rows, series, format, axisFormat = format, domain,
     for (const t of ticks) {
       root.append(s("line", { class: "grid", x1: xs(t), x2: xs(t), y1: firstY, y2: bottomY }));
       root.append(s("text", { class: "tick", x: xs(t), y: bottomY + 18, "text-anchor": "middle", text: axisFormat(t) }));
+      if (topAxis) root.append(s("text", { class: "tick", x: xs(t), y: 14, "text-anchor": "middle", text: axisFormat(t) }));
     }
     if (ref !== undefined) root.append(s("line", { class: "ref", x1: xs(ref), x2: xs(ref), y1: firstY, y2: bottomY }));
     if (xTitle) root.append(axisTitle(xTitle, (x0 + x1) / 2, bottomY + 42));
@@ -400,9 +425,13 @@ function dotRows(container, { rows, series, format, axisFormat = format, domain,
           const v = row.values[se.key];
           if (!isNum(v)) continue;
           g.append(style === "ring"
-            ? s("circle", { class: "dot-ring", cx: xs(v), cy, r: 5, stroke: se.color })
-            : s("circle", { class: "dot", cx: xs(v), cy, r: 5, fill: se.color }));
+            ? s("circle", { class: "dot-ring", cx: xs(v), cy, r: 6, stroke: se.color })
+            : s("circle", { class: "dot", cx: xs(v), cy, r: 6.5, fill: se.color }));
         }
+      }
+      if (valueLabels) {
+        const pts = series.map((se) => ({ se, v: row.values[se.key] })).filter((p) => isNum(p.v)).sort((a, b) => a.v - b.v);
+        if (pts.length === 1 || pts.length === 2) g.append(...valueTags(pts, xs, cy, format, x0, x1));
       }
       if (aside) g.append(s("text", { class: "aside-text", x: width - 4, y: cy, "text-anchor": "end", "dominant-baseline": "middle", text: aside(row) }));
       bindTip(g, () => ({

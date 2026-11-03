@@ -286,7 +286,8 @@ select:hover { border-color: var(--accent-soft); }
 .chart-svg .row:focus-visible .row-bg { stroke: var(--accent); stroke-width: 2; }
 .chart-svg .row-label { fill: var(--ink); font-size: 14px; }
 .chart-svg .row-heading { fill: var(--muted); font-size: 13px; font-weight: 600; }
-.chart-svg .connector { stroke: var(--connector); stroke-width: 2; stroke-linecap: round; }
+.chart-svg .connector { stroke: var(--connector); stroke-width: 3; stroke-linecap: round; }
+.chart-svg .value-tag { fill: var(--muted); font-size: 12px; font-weight: 600; }
 .chart-svg .aside-head { fill: var(--muted); font-size: 12px; }
 .chart-svg .aside-text { fill: var(--ink); font-size: 13px; font-weight: 600; }
 .chart-svg .ref { stroke: var(--muted); stroke-width: 1; shape-rendering: crispEdges; }

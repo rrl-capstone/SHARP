@@ -16,9 +16,9 @@ const COLORS = {
   ramp4: ["#93B3DE", "#6A93CD", "#3F6CAD", "#1B4B85"],
 };
 const SERIES = {
-  hiv: { key: "hiv", label: "People with HIV", color: COLORS.hiv, style: "dot" },
-  matched: { key: "matched", label: "Matched controls", color: COLORS.controls, style: "dot" },
-  pool: { key: "pool", label: "All controls, before matching", color: COLORS.controls, style: "ring" },
+  hiv: { key: "hiv", label: "People with HIV", color: COLORS.hiv, style: "dot", tag: COLORS.hiv },
+  matched: { key: "matched", label: "Matched controls", color: COLORS.controls, style: "dot", tag: "#52677E" },
+  pool: { key: "pool", label: "All controls, before matching", color: COLORS.controls, style: "ring", tag: "#52677E" },
 };
 const RACE = {
   "ASIAN OR PACIFIC ISLANDER": "Asian or Pacific Islander",
@@ -203,7 +203,7 @@ function conditionFigure(rows, series, title, description) {
     description,
     legendItems: series,
   });
-  return { fig, draw: () => dotRows(plot, { rows, series, format: percent, axisFormat: pctAxis, label: title, aside: (r) => r.gap, asideLabel: "Gap", xTitle: "% of person-years with the condition" }) };
+  return { fig, draw: () => dotRows(plot, { rows, series, format: percent, axisFormat: pctAxis, label: title, aside: (r) => r.gap, asideLabel: "Gap", xTitle: "% of person-years with the condition", valueLabels: true }) };
 }
 
 function before(data, body) {
@@ -431,7 +431,7 @@ function gagne(data, body) {
   );
   lineChart(trend.plot, { x: years, series, format: score, label: "Mean Gagne score by year", yTitle: "Mean Gagne score", xTitle: "Study year" });
   stackedBars(levelFig.plot, { bars, parts, label: "Person-years at each Gagne level", xTitle: "% of person-years" });
-  dotRows(groupFig.plot, { rows: groupRows, series: [SERIES.matched, SERIES.hiv], format: percent, axisFormat: pctAxis, label: "Share of person-years with each Gagne group", aside: (r) => r.gap, asideLabel: "Gap", xTitle: "% of person-years with the group" });
+  dotRows(groupFig.plot, { rows: groupRows, series: [SERIES.matched, SERIES.hiv], format: percent, axisFormat: pctAxis, label: "Share of person-years with each Gagne group", aside: (r) => r.gap, asideLabel: "Gap", xTitle: "% of person-years with the group", valueLabels: true });
   drawNetwork();
 }
 
@@ -503,8 +503,8 @@ function care(data, body) {
     const ageFig = figure({ title: "By age", legendItems: series });
     detail.replaceChildren(yearFig.fig, h("div", { class: "pair" }, levelFig.fig, ageFig.fig));
     lineChart(yearFig.plot, { x: years, series: yearSeries, format: percent, axisFormat: pctAxis, label: `${m.label}, by year`, yTitle: "% of person-years that met the measure", xTitle: "Study year" });
-    dotRows(levelFig.plot, { rows: levelRows, series, format: percent, axisFormat: pctAxis, label: `${m.label}, by Gagne level`, xTitle: "% of person-years that met the measure" });
-    dotRows(ageFig.plot, { rows: ageRows, series, format: percent, axisFormat: pctAxis, label: `${m.label}, by age`, xTitle: "% of person-years that met the measure" });
+    dotRows(levelFig.plot, { rows: levelRows, series, format: percent, axisFormat: pctAxis, label: `${m.label}, by Gagne level`, xTitle: "% of person-years that met the measure", valueLabels: true });
+    dotRows(ageFig.plot, { rows: ageRows, series, format: percent, axisFormat: pctAxis, label: `${m.label}, by age`, xTitle: "% of person-years that met the measure", valueLabels: true });
   };
   choice.addEventListener("change", drawDetail);
 
@@ -517,7 +517,7 @@ function care(data, body) {
       h("label", { class: "control", for: "care-measure" }, "Measure", choice)),
     detail,
   );
-  dotRows(overview.plot, { rows, series, format: percent, axisFormat: pctAxis, label: "Care quality measures, matched groups", aside: (r) => r.gap, asideLabel: "Gap", xTitle: "% of person-years that met the measure" });
+  dotRows(overview.plot, { rows, series, format: percent, axisFormat: pctAxis, label: "Care quality measures, matched groups", aside: (r) => r.gap, asideLabel: "Gap", xTitle: "% of person-years that met the measure", valueLabels: true });
   drawDetail();
 }
 
