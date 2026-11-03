@@ -103,6 +103,10 @@ function niceTicks(min, max, target = 4) {
   return ticks;
 }
 
+function axisTitle(text, x, y, anchor = "middle") {
+  return s("text", { class: "axis-title", x, y, "text-anchor": anchor, text });
+}
+
 function barPath(x, y, width, height, radius) {
   const r = Math.min(radius, width / 2, height / 2);
   return `M${x},${y}h${width - r}a${r},${r} 0 0 1 ${r},${r}v${height - 2 * r}a${r},${r} 0 0 1 ${-r},${r}h${-(width - r)}z`;
@@ -221,15 +225,16 @@ function dataTable(columns, rows, caption) {
 // ---------------------------------------------------------------- line chart
 
 // series: [{ label, color, values }] with one value per x.
-function lineChart(container, { x, series, format, endFormat = format, axisFormat = format, height = 240, label, yMax }) {
+function lineChart(container, { x, series, format, endFormat = format, axisFormat = format, height: plotHeight = 240, label, yMax, xTitle, yTitle }) {
   responsive(container, (width) => {
     const present = series.flatMap((se) => se.values.filter(isNum));
     if (!present.length) return emptyNote();
     const ticks = niceTicks(0, yMax ?? Math.max(...present));
     const tickText = ticks.map(axisFormat);
     const narrow = width < 560;
-    const top = 10;
-    const bottom = 30;
+    const top = yTitle ? 30 : 10;
+    const bottom = xTitle ? 50 : 30;
+    const height = plotHeight + (yTitle ? 20 : 0) + (xTitle ? 20 : 0);
     const plotH = height - top - bottom;
     const lo = ticks[0];
     const hi = ticks[ticks.length - 1];
@@ -255,8 +260,10 @@ function lineChart(container, { x, series, format, endFormat = format, axisForma
     });
     const every = Math.max(1, Math.ceil((x.length * 44) / w));
     x.forEach((xv, i) => {
-      if ((x.length - 1 - i) % every === 0) root.append(s("text", { class: "tick", x: xs(i), y: height - 8, "text-anchor": "middle", text: xv }));
+      if ((x.length - 1 - i) % every === 0) root.append(s("text", { class: "tick", x: xs(i), y: height - bottom + 22, "text-anchor": "middle", text: xv }));
     });
+    if (yTitle) root.append(axisTitle(yTitle, 0, 14, "start"));
+    if (xTitle) root.append(axisTitle(xTitle, left + w / 2, height - 6));
     for (const se of series) {
       let d = "";
       let pen = false;
@@ -331,7 +338,7 @@ function lineChart(container, { x, series, format, endFormat = format, axisForma
 
 // rows: [{ label, values: { [series.key]: value }, extra: [[label, text]] }] or [{ heading }].
 // series: [{ key, label, color, style: "dot" | "ring" }].
-function dotRows(container, { rows, series, format, axisFormat = format, domain, ref, band, label, aside, asideLabel }) {
+function dotRows(container, { rows, series, format, axisFormat = format, domain, ref, band, label, aside, asideLabel, xTitle }) {
   responsive(container, (width) => {
     const present = rows.flatMap((r) => (r.heading ? [] : series.map((se) => r.values[se.key]).filter(isNum)));
     if (!present.length) return emptyNote();
@@ -360,7 +367,7 @@ function dotRows(container, { rows, series, format, axisFormat = format, domain,
       y += rowH;
     }
     const bottomY = y;
-    const height = bottomY + 28;
+    const height = bottomY + (xTitle ? 50 : 28);
 
     const root = s("svg", { class: "chart-svg", width, height, viewBox: `0 0 ${width} ${height}`, role: "group", "aria-label": label });
     if (band) root.append(s("rect", { class: "band", x: xs(band[0]), y: firstY, width: xs(band[1]) - xs(band[0]), height: bottomY - firstY }));
@@ -369,6 +376,7 @@ function dotRows(container, { rows, series, format, axisFormat = format, domain,
       root.append(s("text", { class: "tick", x: xs(t), y: bottomY + 18, "text-anchor": "middle", text: axisFormat(t) }));
     }
     if (ref !== undefined) root.append(s("line", { class: "ref", x1: xs(ref), x2: xs(ref), y1: firstY, y2: bottomY }));
+    if (xTitle) root.append(axisTitle(xTitle, (x0 + x1) / 2, bottomY + 42));
     if (asideLabel) root.append(s("text", { class: "aside-head", x: width - 4, y: 14, "text-anchor": "end", text: asideLabel }));
 
     for (const item of layout) {
@@ -410,7 +418,7 @@ function dotRows(container, { rows, series, format, axisFormat = format, domain,
 
 // bars: [{ label, values: { [part.key]: percent }, counts: { [part.key]: count } }]
 // parts: [{ key, label, color, dark }] in order; dark parts get white labels.
-function stackedBars(container, { bars, parts, label }) {
+function stackedBars(container, { bars, parts, label, xTitle }) {
   responsive(container, (width) => {
     const narrow = width < 560;
     const labelW = narrow ? 0 : 150;
@@ -418,13 +426,14 @@ function stackedBars(container, { bars, parts, label }) {
     const x1 = width - 4;
     const barH = 24;
     const rowH = narrow ? 58 : 46;
-    const height = bars.length * rowH + 26;
+    const height = bars.length * rowH + (xTitle ? 48 : 26);
     const xs = (p) => x0 + (Math.min(100, p) / 100) * (x1 - x0);
     const root = s("svg", { class: "chart-svg", width, height, viewBox: `0 0 ${width} ${height}`, role: "group", "aria-label": label });
     for (const t of [0, 25, 50, 75, 100]) {
       root.append(s("line", { class: "grid", x1: xs(t), x2: xs(t), y1: 0, y2: bars.length * rowH }));
       root.append(s("text", { class: "tick", x: xs(t), y: bars.length * rowH + 18, "text-anchor": t === 0 ? "start" : t === 100 ? "end" : "middle", text: `${t}%` }));
     }
+    if (xTitle) root.append(axisTitle(xTitle, (x0 + x1) / 2, bars.length * rowH + 40));
     bars.forEach((bar, b) => {
       const y = b * rowH;
       const barY = narrow ? y + 26 : y + (rowH - barH) / 2;

@@ -269,6 +269,7 @@ select:hover { border-color: var(--accent-soft); }
 .chart-svg { display: block; max-width: 100%; height: auto; overflow: visible; font-family: var(--sans); }
 .chart-svg .grid { stroke: var(--grid); stroke-width: 1; shape-rendering: crispEdges; }
 .chart-svg .tick { fill: var(--muted); font-size: 12px; }
+.chart-svg .axis-title { fill: var(--muted); font-size: 12px; font-weight: 600; }
 .chart-svg .line { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
 .chart-svg .dot { stroke: var(--paper); stroke-width: 2; }
 .chart-svg .dot-ring { fill: var(--paper); stroke-width: 2; }

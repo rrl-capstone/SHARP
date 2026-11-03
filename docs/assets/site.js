@@ -149,7 +149,7 @@ function eligible(data, body) {
       strong(count(Math.min(...eligibleCounts))), " and ", strong(count(Math.max(...eligibleCounts))), " people a year."),
     fig,
   );
-  lineChart(plot, { x: years, series, format: count, endFormat: compactCount, axisFormat: compactCount, label: "People left after each eligibility step, by year" });
+  lineChart(plot, { x: years, series, format: count, endFormat: compactCount, axisFormat: compactCount, label: "People left after each eligibility step, by year", yTitle: "People", xTitle: "Study year" });
 }
 
 // ---------------------------------------------------------------- 2. HIV and control groups
@@ -191,7 +191,7 @@ function groups(data, body) {
     trend.fig, routes.fig,
     note(`${count(someRecord)} people in the control pool have an HIV record that does not meet the definition, such as a single diagnosis or a single medicine fill. Under the lab's rule, anyone who is not an HIV case can be a control.`),
   );
-  lineChart(trend.plot, { x: years, series: hivSeries, format: count, axisFormat: compactCount, label: "People with HIV in each study year" });
+  lineChart(trend.plot, { x: years, series: hivSeries, format: count, axisFormat: compactCount, label: "People with HIV in each study year", yTitle: "People with HIV", xTitle: "Study year" });
   barList(routes.plot, { rows: routeRows, format: count, label: "People with HIV by the routes that found them" });
 }
 
@@ -203,7 +203,7 @@ function conditionFigure(rows, series, title, description) {
     description,
     legendItems: series,
   });
-  return { fig, draw: () => dotRows(plot, { rows, series, format: percent, axisFormat: pctAxis, label: title, aside: (r) => r.gap, asideLabel: "Gap" }) };
+  return { fig, draw: () => dotRows(plot, { rows, series, format: percent, axisFormat: pctAxis, label: title, aside: (r) => r.gap, asideLabel: "Gap", xTitle: "% of person-years with the condition, all years" }) };
 }
 
 function before(data, body) {
@@ -233,7 +233,7 @@ function before(data, body) {
     main.fig, counts.fig,
   );
   main.draw();
-  dotRows(counts.plot, { rows: countsRows, series, format: percent, axisFormat: pctAxis, label: "Number of conditions per person-year, before matching" });
+  dotRows(counts.plot, { rows: countsRows, series, format: percent, axisFormat: pctAxis, label: "Number of conditions per person-year, before matching", xTitle: "% of person-years" });
 }
 
 function after(data, body) {
@@ -265,7 +265,7 @@ function after(data, body) {
     main.fig, counts.fig,
   );
   main.draw();
-  dotRows(counts.plot, { rows: countsRows, series: [SERIES.matched, SERIES.hiv], format: percent, axisFormat: pctAxis, label: "Number of conditions per person-year, after matching" });
+  dotRows(counts.plot, { rows: countsRows, series: [SERIES.matched, SERIES.hiv], format: percent, axisFormat: pctAxis, label: "Number of conditions per person-year, after matching", xTitle: "% of person-years" });
 }
 
 // ---------------------------------------------------------------- 4. matching
@@ -331,7 +331,7 @@ function matching(data, body) {
       values: { before: r.smd_before, after: r.smd_after },
     }));
     const extent = Math.max(0.25, ...rows.flatMap((r) => [r.values.before, r.values.after]).filter(isNum).map(Math.abs));
-    dotRows(love.plot, { rows, series, format: smd, axisFormat: (v) => v.toFixed(1), domain: [-extent, extent], ref: 0, band: [-0.1, 0.1], label: `Balance of each matching variable in ${year}` });
+    dotRows(love.plot, { rows, series, format: smd, axisFormat: (v) => v.toFixed(1), domain: [-extent, extent], ref: 0, band: [-0.1, 0.1], label: `Balance of each matching variable in ${year}`, xTitle: "Standardized mean difference" });
   };
   yearSelect.addEventListener("change", drawLove);
 
@@ -429,9 +429,9 @@ function gagne(data, body) {
       " of their person-years scored 5 or more, against ", strong(percent(high(0))), "."),
     trend.fig, levelFig.fig, groupFig.fig, network.fig,
   );
-  lineChart(trend.plot, { x: years, series, format: score, label: "Mean Gagne score by year" });
-  stackedBars(levelFig.plot, { bars, parts, label: "Person-years at each Gagne level" });
-  dotRows(groupFig.plot, { rows: groupRows, series: [SERIES.matched, SERIES.hiv], format: percent, axisFormat: pctAxis, label: "Share of person-years with each Gagne group", aside: (r) => r.gap, asideLabel: "Gap" });
+  lineChart(trend.plot, { x: years, series, format: score, label: "Mean Gagne score by year", yTitle: "Mean Gagne score", xTitle: "Study year" });
+  stackedBars(levelFig.plot, { bars, parts, label: "Person-years at each Gagne level", xTitle: "% of person-years" });
+  dotRows(groupFig.plot, { rows: groupRows, series: [SERIES.matched, SERIES.hiv], format: percent, axisFormat: pctAxis, label: "Share of person-years with each Gagne group", aside: (r) => r.gap, asideLabel: "Gap", xTitle: "% of person-years with the group" });
   drawNetwork();
 }
 
@@ -502,9 +502,9 @@ function care(data, body) {
     const levelFig = figure({ title: "Within Gagne levels", description: "People with HIV compared with controls who are about as sick.", legendItems: series });
     const ageFig = figure({ title: "By age", legendItems: series });
     detail.replaceChildren(yearFig.fig, h("div", { class: "pair" }, levelFig.fig, ageFig.fig));
-    lineChart(yearFig.plot, { x: years, series: yearSeries, format: percent, axisFormat: pctAxis, label: `${m.label}, by year` });
-    dotRows(levelFig.plot, { rows: levelRows, series, format: percent, axisFormat: pctAxis, label: `${m.label}, by Gagne level` });
-    dotRows(ageFig.plot, { rows: ageRows, series, format: percent, axisFormat: pctAxis, label: `${m.label}, by age` });
+    lineChart(yearFig.plot, { x: years, series: yearSeries, format: percent, axisFormat: pctAxis, label: `${m.label}, by year`, yTitle: "% of person-years that met the measure", xTitle: "Study year" });
+    dotRows(levelFig.plot, { rows: levelRows, series, format: percent, axisFormat: pctAxis, label: `${m.label}, by Gagne level`, xTitle: "% of person-years that met the measure" });
+    dotRows(ageFig.plot, { rows: ageRows, series, format: percent, axisFormat: pctAxis, label: `${m.label}, by age`, xTitle: "% of person-years that met the measure" });
   };
   choice.addEventListener("change", drawDetail);
 
@@ -517,7 +517,7 @@ function care(data, body) {
       h("label", { class: "control", for: "care-measure" }, "Measure", choice)),
     detail,
   );
-  dotRows(overview.plot, { rows, series, format: percent, axisFormat: pctAxis, label: "Care quality measures, matched groups", aside: (r) => r.gap, asideLabel: "Gap" });
+  dotRows(overview.plot, { rows, series, format: percent, axisFormat: pctAxis, label: "Care quality measures, matched groups", aside: (r) => r.gap, asideLabel: "Gap", xTitle: "% of person-years that met the measure, all years" });
   drawDetail();
 }
 
