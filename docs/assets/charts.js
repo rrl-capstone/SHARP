@@ -346,7 +346,7 @@ function dotRows(container, { rows, series, format, axisFormat = format, domain,
     const ticks = niceTicks(domain ? domain[0] : 0, domain ? domain[1] : Math.max(...present));
     const lo = ticks[0];
     const hi = ticks[ticks.length - 1];
-    const labelW = narrow ? 0 : Math.round(Math.min(280, width * 0.36));
+    const labelW = narrow ? 0 : Math.round(Math.min(320, width * 0.4));
     const asideW = aside ? 60 : 0;
     const x0 = narrow ? 10 : labelW + 22;
     const x1 = width - asideW - 14;
@@ -357,12 +357,13 @@ function dotRows(container, { rows, series, format, axisFormat = format, domain,
     let y = firstY;
     for (const row of rows) {
       if (row.heading) {
-        layout.push({ row, y, h: 30 });
-        y += 30;
+        const h = y === firstY ? 30 : 44;
+        layout.push({ row, y, h });
+        y += h;
         continue;
       }
       const lines = wrap(row.label, maxChars);
-      const rowH = narrow ? lines.length * 16 + 30 : Math.max(34, lines.length * 16 + 14);
+      const rowH = narrow ? lines.length * 18 + 34 : Math.max(44, lines.length * 18 + 22);
       layout.push({ row, y, h: rowH, lines });
       y += rowH;
     }
@@ -382,14 +383,14 @@ function dotRows(container, { rows, series, format, axisFormat = format, domain,
     for (const item of layout) {
       const { row } = item;
       if (row.heading) {
-        root.append(s("text", { class: "row-heading", x: narrow ? 10 : 0, y: item.y + 22, text: row.heading }));
+        root.append(s("text", { class: "row-heading", x: narrow ? 10 : 0, y: item.y + item.h - 8, text: row.heading }));
         continue;
       }
-      const cy = narrow ? item.y + item.lines.length * 16 + 14 : item.y + item.h / 2;
+      const cy = narrow ? item.y + item.lines.length * 18 + 16 : item.y + item.h / 2;
       const g = s("g", { class: "row" });
       g.append(s("rect", { class: "row-bg", x: 0, y: item.y + 1, width, height: item.h - 2, rx: 4 }));
-      g.append(multiline(item.lines, { class: "row-label", x: narrow ? 10 : labelW, y: narrow ? item.y + 15 : cy, "text-anchor": narrow ? "start" : "end" },
-        narrow ? "top" : "middle"));
+      g.append(multiline(item.lines, { class: "row-label", x: narrow ? 10 : labelW, y: narrow ? item.y + 17 : cy, "text-anchor": narrow ? "start" : "end" },
+        narrow ? "top" : "middle", 18));
       const values = series.map((se) => row.values[se.key]).filter(isNum);
       if (values.length > 1) {
         g.append(s("line", { class: "connector", x1: xs(Math.min(...values)), x2: xs(Math.max(...values)), y1: cy, y2: cy }));

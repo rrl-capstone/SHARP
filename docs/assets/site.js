@@ -203,7 +203,7 @@ function conditionFigure(rows, series, title, description) {
     description,
     legendItems: series,
   });
-  return { fig, draw: () => dotRows(plot, { rows, series, format: percent, axisFormat: pctAxis, label: title, aside: (r) => r.gap, asideLabel: "Gap", xTitle: "% of person-years with the condition, all years" }) };
+  return { fig, draw: () => dotRows(plot, { rows, series, format: percent, axisFormat: pctAxis, label: title, aside: (r) => r.gap, asideLabel: "Gap", xTitle: "% of person-years with the condition" }) };
 }
 
 function before(data, body) {
@@ -517,7 +517,7 @@ function care(data, body) {
       h("label", { class: "control", for: "care-measure" }, "Measure", choice)),
     detail,
   );
-  dotRows(overview.plot, { rows, series, format: percent, axisFormat: pctAxis, label: "Care quality measures, matched groups", aside: (r) => r.gap, asideLabel: "Gap", xTitle: "% of person-years that met the measure, all years" });
+  dotRows(overview.plot, { rows, series, format: percent, axisFormat: pctAxis, label: "Care quality measures, matched groups", aside: (r) => r.gap, asideLabel: "Gap", xTitle: "% of person-years that met the measure" });
   drawDetail();
 }
 
