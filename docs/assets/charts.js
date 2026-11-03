@@ -56,7 +56,13 @@ function display(v, format) {
   return v === HIDDEN ? "<11 (hidden)" : "hidden";
 }
 
-const textWidth = (text, size) => String(text).length * size * 0.56;
+// Measured in the chart font, so axis labels are never cut off at the edge (an estimate from the
+// character count ran short for digits and "%").
+const measure = document.createElement("canvas").getContext("2d");
+const textWidth = (text, size) => {
+  measure.font = `600 ${size}px ${getComputedStyle(document.documentElement).getPropertyValue("--sans")}`;
+  return Math.ceil(Math.max(measure.measureText(String(text)).width, String(text).length * size * 0.56)) + 2;
+};
 
 // Split a label into at most maxLines lines of about maxChars characters.
 function wrap(text, maxChars, maxLines = 2) {
