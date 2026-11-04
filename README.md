@@ -34,8 +34,7 @@ pip install -r requirements.lock
 copy config\local.example.yml config\local.yml
 ```
 
-Edit `config/local.yml`: your Redshift username and the folder holding the Redshift JDBC driver.
-In R, once: `install.packages(c("DatabaseConnector", "dplyr", "MatchIt"))`. Then:
+Edit `config/local.yml`: your Redshift username. Then:
 
 ```
 python -m runner --check
@@ -61,14 +60,71 @@ If a step fails, the run stops, says why, and prints the command to resume, for 
 step, and `python -m runner --dry-run` writes every statement it would run to `build/rendered/`
 without touching the database.
 
+After each step the runner also writes the row count of every table the step built to
+`build/parity/<profile>.json` (not committed). These counts are exact, unlike `results/`, so two
+runs (for example Redshift and Explorer) can be compared table by table with `diff`. They are
+counts of patient-level tables: keep the file inside the lab workspace or Explorer.
+
+## Running on Explorer
+
+Explorer (Northeastern's cluster) holds Komodo as read-only parquet files. There the same steps
+run on DuckDB instead of Redshift: the step SQL stays Redshift SQL and is translated just before
+it runs ([`runner/dialect.py`](runner/dialect.py)), and Komodo's tables are views over the parquet
+files, with `normalized_dx_events` built from the two event tables
+([`runner/duckdb_backend.py`](runner/duckdb_backend.py)). The only folder you can write to is
+`/projects/OHDSI_Lab/extracts/<project_dir>/`, so the repository, its virtual environment, the
+DuckDB files and the logs all live there. Never open or copy out the `.duckdb` files: they hold
+the patient-level tables.
+
+Once, on a login node:
+
+```
+cd /projects/OHDSI_Lab/extracts/<project_dir>
+git clone https://github.com/rrl-capstone/SHARP.git
+cd SHARP
+module load anaconda3/2024.06
+python -m venv .venv
+source .venv/bin/activate
+export PYTHONNOUSERSITE=1
+pip install -r requirements.lock
+cp config/explorer.example.yml config/explorer.yml
+```
+
+Edit `config/explorer.yml`: set `extracts_dir` to your project folder (the snapshot is 202606,
+the one the Redshift runs use). Keep no `config/local.yml` in this checkout. Then check the
+files, folders and column types (nothing is read but permissions and parquet schemas):
+
+```
+python -m runner --check --profile sample_1pct
+```
+
+and submit a run as a Slurm job (partition `short`, 8 CPUs, 64 GB; `SHARP_TIME` sets the time
+limit, default 08:00:00):
+
+```
+bash scripts/explorer_job.sbatch sample_1pct
+SHARP_TIME=24:00:00 bash scripts/explorer_job.sbatch full
+squeue -u "$USER"
+```
+
+Each profile has its own database file, `<extracts_dir>/sharp_<profile>.duckdb`, so the three
+profiles can run as three jobs at once. The job's log goes to `<extracts_dir>/logs/`, never the
+repository (an error message can quote a value from the data). Threads and memory follow the Slurm
+allocation (85% of it for DuckDB); `config/explorer.yml` can override them. A failed job says
+where it stopped; resume from there with `SHARP_FROM=4_matching bash scripts/explorer_job.sbatch full`.
+
+Results go to `results/<profile>/` as on Redshift, with `"backend": "duckdb"` in `run_info.json`;
+commit and push them the same way. To compare with the Redshift run, `diff` the two
+`build/parity/<profile>.json` files.
+
 ## Results
 
 Each run saves aggregate tables to `results/<profile>/`, one folder per stage, plus Rhea's plots in `5_gagne/plots/` and `run_info.json` (when, from which commit, with
 which settings). Counts from 1 to 10 are shown as `<11`, and the percentages next to them are
 blanked. Every other count is rounded to the nearest 10 (never shown below 20) and percentages to
 one decimal, so a hidden count cannot be worked out from totals. After changing this rule, run
-`python -m runner.results` to re-apply it to the saved CSVs. Only these files leave Redshift; patient-level tables stay in your work schema, and
-the matching backup `build/matched.rds` is never committed.
+`python -m runner.results` to re-apply it to the saved CSVs. Only these files leave Redshift (or
+Explorer); patient-level tables stay in your work schema (or the profile's `.duckdb` file).
 
 To share a run: commit `results/` and push.
 
@@ -86,7 +142,8 @@ Pages is set up once in the repository settings: Pages, Source: GitHub Actions.
 
 | Path | What's in it |
 |---|---|
-| [`config/`](config/) | `study.yml`: every study setting, in one place. `local.yml`: your own settings (not committed) |
+| [`config/`](config/) | `study.yml`: every study setting, in one place. `local.yml` (Redshift) or `explorer.yml` (Explorer): your own settings (not committed) |
+| [`scripts/`](scripts/) | `explorer_job.sbatch`: runs one profile as a Slurm job on Explorer |
 | [`pipeline/`](pipeline/) | The six stages, one folder each, steps in run order |
 | [`runner/`](runner/) | Runs the steps (the order is listed once, in `runner/steps.py`) and saves results |
 | [`reference/`](reference/) | Code lists: conditions, procedures, drugs, measures, Gagne lookups |

@@ -1,20 +1,29 @@
-"""Reads config/study.yml and config/local.yml, checks every value, and turns them into the
-${variables} the SQL steps use. Every value that ends up inside SQL is validated here."""
+"""Reads config/study.yml and your own settings, checks every value, and turns them into the
+${variables} the SQL steps use. Every value that ends up inside SQL is validated here.
+
+Your own settings are config/explorer.yml if it exists (Explorer: DuckDB on Komodo's parquet
+files), otherwise config/local.yml (the lab workspace: Redshift). Its `backend:` decides, and is
+redshift when not given, so an existing local.yml keeps working unchanged."""
 from __future__ import annotations
 
 import csv
 import re
 from dataclasses import dataclass
-from pathlib import Path
+from pathlib import Path, PurePosixPath, PureWindowsPath
 
 import yaml
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 STUDY_FILE = REPO_ROOT / "config" / "study.yml"
 LOCAL_FILE = REPO_ROOT / "config" / "local.yml"
+EXPLORER_FILE = REPO_ROOT / "config" / "explorer.yml"
 REFERENCE_DIR = REPO_ROOT / "reference"
+BACKENDS = ("redshift", "duckdb")
 
 _IDENTIFIER = re.compile(r"^[a-z_][a-z0-9_]*$")
+_PATH = re.compile(r"^[A-Za-z0-9._/:\\-]+$")      # goes into read_parquet('...'): nothing that needs quoting
+_SNAPSHOT = re.compile(r"^\d{6}$")
+_MEMORY = re.compile(r"^\d+(\.\d+)?\s*(KB|MB|GB|TB|KiB|MiB|GiB|TiB)$")
 _UPPER_WORD = re.compile(r"^[A-Z_]+$")
 _HOST = re.compile(r"^[A-Za-z0-9.-]+$")
 _DX_PREFIX = re.compile(r"^[A-Z][0-9A-Z]{1,6}$")
@@ -57,10 +66,27 @@ class Config:
     lookback_years: int
     jdbc_driver_folder: str
     rscript: str
+    backend: str = "redshift"
+    # DuckDB only (config/explorer.yml); empty or None on Redshift
+    komodo_root: str = ""
+    snapshot: str = ""
+    extracts_dir: str = ""
+    duckdb_threads: int | None = None
+    duckdb_memory_limit: str | None = None
+    duckdb_temp_root: str = ""
 
     @property
     def run_name(self) -> str:
         return self.profile
+
+    @property
+    def duckdb_file(self) -> str:
+        """One database file per profile, so the three profiles can run at the same time."""
+        return f"{self.extracts_dir}/sharp_{self.profile}.duckdb"
+
+    @property
+    def duckdb_temp_directory(self) -> str:
+        return f"{self.duckdb_temp_root}/{self.profile}"
 
     @property
     def table_suffix(self) -> str:
@@ -104,20 +130,72 @@ def _identifier(value, what: str) -> str:
 
 def _read_yaml(path: Path) -> dict:
     if not path.exists():
-        hint = " Copy config/local.example.yml to config/local.yml and fill it in." \
-            if path.name == "local.yml" else ""
-        raise ConfigError(f"{path.as_posix()} not found.{hint}")
+        raise ConfigError(f"{path.as_posix()} not found.")
     data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
     if not isinstance(data, dict):
         raise ConfigError(f"{path.as_posix()} must be a list of settings.")
     return data
 
 
+def personal_file() -> Path:
+    """config/explorer.yml if it exists, otherwise config/local.yml (read at call time, for tests)."""
+    if EXPLORER_FILE.exists() and LOCAL_FILE.exists():
+        raise ConfigError(f"Both {EXPLORER_FILE.name} and {LOCAL_FILE.name} are in config/: keep the one for "
+                          "this machine (explorer.yml on Explorer, local.yml on the lab workspace).")
+    if EXPLORER_FILE.exists():
+        return EXPLORER_FILE
+    if LOCAL_FILE.exists():
+        return LOCAL_FILE
+    raise ConfigError("No personal settings in config/. On the lab workspace (Redshift), copy "
+                      "config/local.example.yml to config/local.yml; on Explorer (DuckDB), copy "
+                      "config/explorer.example.yml to config/explorer.yml. Then fill it in.")
+
+
+def _directory(value, what: str) -> str:
+    """An absolute folder, as forward slashes. It ends up inside SQL (read_parquet), so only plain
+    characters are allowed."""
+    absolute = isinstance(value, str) and (PurePosixPath(value).is_absolute() or PureWindowsPath(value).is_absolute())
+    if not absolute or not _PATH.match(value) or ".." in Path(value).parts:
+        raise ConfigError(f"{what} must be an absolute folder of letters, digits, . _ - and /, not {value!r}.")
+    return Path(value).as_posix().rstrip("/")
+
+
+def _duckdb_settings(personal: dict, where: str) -> dict:
+    """The DuckDB-only settings of config/explorer.yml."""
+    extracts = _directory(personal.get("extracts_dir"), f"extracts_dir in {where}")
+    snapshot = str(personal.get("snapshot", ""))
+    if not _SNAPSHOT.match(snapshot):
+        raise ConfigError(f"snapshot in {where} must be the six digits of a Komodo snapshot, e.g. 202606.")
+    duck = personal.get("duckdb") or {}
+    if not isinstance(duck, dict):
+        raise ConfigError(f"duckdb in {where} must be a list of settings.")
+    threads = duck.get("threads")
+    if threads is not None and (isinstance(threads, bool) or not isinstance(threads, int) or not 1 <= threads <= 1024):
+        raise ConfigError(f"duckdb.threads in {where} must be a whole number from 1 to 1024, not {threads!r}.")
+    memory = duck.get("memory_limit")
+    if memory is not None and (not isinstance(memory, str) or not _MEMORY.match(memory)):
+        raise ConfigError(f"duckdb.memory_limit in {where} must look like 48GB, not {memory!r}.")
+    temp = duck.get("temp_directory")
+    return {
+        "komodo_root": _directory(personal.get("komodo_root"), f"komodo_root in {where}"),
+        "snapshot": snapshot,
+        "extracts_dir": extracts,
+        "duckdb_threads": threads,
+        "duckdb_memory_limit": memory,
+        "duckdb_temp_root": f"{extracts}/duckdb_tmp" if temp is None else _directory(temp, f"duckdb.temp_directory in {where}"),
+    }
+
+
 def load(study_file: Path | None = None, local_file: Path | None = None,
          profile: str | None = None) -> Config:
-    """Paths default to config/study.yml and config/local.yml (read at call time, for tests).
+    """Paths default to config/study.yml and personal_file() (read at call time, for tests).
     profile overrides run.profile in study.yml (python -m runner --profile ...)."""
-    study, local = _read_yaml(study_file or STUDY_FILE), _read_yaml(local_file or LOCAL_FILE)
+    personal_path = local_file or personal_file()
+    study, local = _read_yaml(study_file or STUDY_FILE), _read_yaml(personal_path)
+    where = f"config/{personal_path.name}"
+    backend = local.get("backend", "redshift")
+    if backend not in BACKENDS:
+        raise ConfigError(f"backend in {where} must be one of {', '.join(BACKENDS)}, not {backend!r}.")
 
     chosen = profile or _get(study, "run.profile")
     if not isinstance(chosen, str) or chosen not in PROFILES:
@@ -125,8 +203,14 @@ def load(study_file: Path | None = None, local_file: Path | None = None,
     host = _get(study, "redshift.host")
     if not isinstance(host, str) or not _HOST.match(host):
         raise ConfigError(f"redshift.host is not a host name: {host!r}.")
-    user = _identifier(_get(local, "redshift_user"), "redshift_user in config/local.yml")
-    work_schema = _identifier(local.get("work_schema") or f"work_{user}", "work_schema")
+    if backend == "duckdb":
+        user, duck = "", _duckdb_settings(local, where)
+        work_schema = _identifier(local.get("work_schema") or "work", "work_schema")
+        komodo_schema = f"komodo_{duck['snapshot']}"
+    else:
+        user, duck = _identifier(_get(local, "redshift_user"), f"redshift_user in {where}"), {}
+        work_schema = _identifier(local.get("work_schema") or f"work_{user}", "work_schema")
+        komodo_schema = _identifier(_get(study, "komodo_schema"), "komodo_schema")
 
     first = _int(study, "study_years.first", 2016, 2100)
     last = _int(study, "study_years.last", first, 2100)
@@ -158,7 +242,7 @@ def load(study_file: Path | None = None, local_file: Path | None = None,
         database=_identifier(_get(study, "redshift.database"), "redshift.database"),
         redshift_user=user,
         work_schema=work_schema,
-        komodo_schema=_identifier(_get(study, "komodo_schema"), "komodo_schema"),
+        komodo_schema=komodo_schema,
         first_year=first,
         last_year=last,
         final_status=tuple(final_status),
@@ -171,6 +255,8 @@ def load(study_file: Path | None = None, local_file: Path | None = None,
         lookback_years=_int(study, "measures.lookback_years", 0, 10),
         jdbc_driver_folder=jdbc,
         rscript=rscript,
+        backend=backend,
+        **duck,
     )
 
 

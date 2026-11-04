@@ -34,6 +34,40 @@ def test_an_unknown_profile_is_rejected(local_file: Path) -> None:
         config.load(profile="sample_50pct")
 
 
+def test_a_local_yml_without_a_backend_is_redshift(local_file: Path) -> None:
+    cfg = config.load()
+    assert cfg.backend == "redshift" and cfg.komodo_schema == "komodo_202606" and cfg.extracts_dir == ""
+
+
+def test_explorer_yml_selects_duckdb_with_one_database_file_per_profile(explorer_file: Path) -> None:
+    cfg = config.load(profile="sample_30pct")
+    assert cfg.backend == "duckdb"
+    assert cfg.komodo_schema == "komodo_202606" and cfg.work_schema == "work"
+    assert cfg.duckdb_file == "/projects/OHDSI_Lab/extracts/your_project_dir/sharp_sample_30pct.duckdb"
+    assert cfg.duckdb_temp_directory == "/projects/OHDSI_Lab/extracts/your_project_dir/duckdb_tmp/sample_30pct"
+    assert cfg.table_suffix == "_s30"
+
+
+def test_a_missing_personal_file_names_both_examples(local_file: Path) -> None:
+    local_file.unlink()
+    with pytest.raises(config.ConfigError, match="local.example.yml.*explorer.example.yml"):
+        config.load()
+
+
+def test_explorer_yml_and_local_yml_together_are_refused(explorer_file: Path) -> None:
+    config.LOCAL_FILE.write_text("redshift_user: x\n", encoding="utf-8")
+    with pytest.raises(config.ConfigError, match="Both"):
+        config.load()
+
+
+def test_a_path_that_could_change_the_sql_is_rejected(explorer_file: Path) -> None:
+    for bad in ("relative/folder", "/projects/x'); DROP TABLE y; --", "/projects/../etc"):
+        explorer_file.write_text(f"backend: duckdb\nkomodo_root: \"{bad}\"\nsnapshot: '202606'\n"
+                                 "extracts_dir: /projects/e\n", encoding="utf-8")
+        with pytest.raises(config.ConfigError, match="komodo_root"):
+            config.load()
+
+
 def test_the_drug_scan_filter_lets_through_every_drug_pattern() -> None:
     regex = config.drug_patterns_regex()
     for row in config.read_reference("drug_patterns.csv"):

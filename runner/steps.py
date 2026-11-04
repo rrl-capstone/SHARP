@@ -10,6 +10,7 @@ Kinds:
 from __future__ import annotations
 
 import importlib.util
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from types import ModuleType
@@ -25,6 +26,9 @@ SUPPORT_FILES = frozenset({"5_gagne/gagne_config.py", "README.md"})  # used by s
 class Step:
     path: str   # relative to pipeline/
     kind: str
+    # Work-schema tables a python or python_script step creates (a SQL step's are read from its
+    # CREATE TABLE statements), for the row counts in build/parity/<profile>.json.
+    outputs: tuple[str, ...] = ()
 
     @property
     def stage(self) -> str:
@@ -59,11 +63,13 @@ STEPS: tuple[Step, ...] = (
     Step("3_conditions/4_person_year_conditions.sql", "sql"),
     # 4. Propensity score matching (Lifei), and the comparison after matching
     Step("4_matching/10_ps_input.sql", "sql"),
-    Step("4_matching/11_ps_matching.py", "python"),
+    Step("4_matching/11_ps_matching.py", "python", outputs=("ps_matched",)),
     Step("4_matching/12_matched_summaries.sql", "sql"),
     # 5. Gagne comorbidity score of the matched people (Rhea)
-    Step("5_gagne/gagne_1_evidence.py", "python_script"),
-    Step("5_gagne/gagne_2_scores.py", "python_script"),
+    Step("5_gagne/gagne_1_evidence.py", "python_script",
+         outputs=("gagne_person_years", "gagne_rules", "gagne_dx_candidates", "gagne_code_map",
+                  "gagne_group_evidence")),
+    Step("5_gagne/gagne_2_scores.py", "python_script", outputs=("gagne_scores",)),
     Step("5_gagne/gagne_3_plots.py", "python_script"),
     Step("5_gagne/gagne_4_network.py", "python_script"),
     Step("5_gagne/gagne_5_summaries.sql", "sql"),
@@ -102,6 +108,18 @@ def load_module(step: Step) -> ModuleType:
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
+
+
+_CREATE_TABLE = re.compile(r"\bCREATE\s+TABLE\s+\$\{work_schema\}\.([a-z0-9_]+)\$\{sfx\}", re.IGNORECASE)
+
+
+def created_tables(step: Step, variables: dict[str, str]) -> list[str]:
+    """The work-schema tables the step builds, with the profile's suffix, e.g. study_ids_s1."""
+    if step.kind in ("sql", "sql_from_python"):
+        names = [n for s in statements(step, variables) for n in _CREATE_TABLE.findall(s.text)]
+    else:
+        names = list(step.outputs)
+    return [name + variables["sfx"] for name in dict.fromkeys(names)]
 
 
 def statements(step: Step, variables: dict[str, str]) -> list[sql.Statement]:
