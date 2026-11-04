@@ -20,11 +20,14 @@ Logic follows Nemo Zhou's shareable_clinical_metrics R scripts 2, 3 and 5
 (Gagne parts only), generalised from 2022 to any list of study years and
 pointed at the matched cohort (ps_matched) instead of his eligibility table.
 
-Settings come from config/study.yml and config/local.yml: `python -m runner`
+Settings come from config/study.yml and your personal settings file: `python -m runner`
 passes them to these scripts as environment variables (SHARP_*, REDSHIFT_*).
+On Explorer (SHARP_BACKEND=duckdb) the scripts open the profile's DuckDB file instead, and
+their SQL is translated from Redshift SQL by runner/dialect.py.
 """
 
 import getpass
+import json
 import os
 import time
 from pathlib import Path
@@ -41,6 +44,9 @@ def _env(name: str) -> "str | None":
 
 
 SETTINGS = {
+    # redshift, or duckdb on Explorer (set by the runner)
+    "backend": os.environ.get("SHARP_BACKEND") or "redshift",
+
     # Years to score. Each person-year uses diagnoses from Jan 1 - Dec 31 of
     # that year (1-year look-back to the Dec 31 index date).
     "study_years": list(range(int(os.environ.get("SHARP_FIRST_YEAR", "2016")),
@@ -103,7 +109,12 @@ def komodo(name):
 
 def connect():
     """Open a Redshift connection. The password comes from REDSHIFT_PASSWORD (set by the
-    runner) or is typed at runtime, and is never saved."""
+    runner) or is typed at runtime, and is never saved. On DuckDB: the profile's file, with the
+    runner's settings (the runner closed its own connection first: one writer per file)."""
+    if SETTINGS["backend"] == "duckdb":
+        from runner.duckdb_backend import open_file
+        return open_file(os.environ["SHARP_DUCKDB_FILE"], json.loads(os.environ["SHARP_DUCKDB_SETTINGS"]))
+
     import redshift_connector  # imported here so the rule functions can be tested without it
 
     missing = [key for key in DB_SETTINGS if not SETTINGS[key]]
@@ -120,13 +131,21 @@ def connect():
     return conn
 
 
+def for_backend(sql):
+    """The statement as the backend runs it: unchanged on Redshift, translated on DuckDB."""
+    if SETTINGS["backend"] != "duckdb":
+        return sql
+    from runner.dialect import to_duckdb
+    return to_duckdb(sql)
+
+
 def run_sql(conn, sql, label=None):
     """Run one SQL statement (no results), printing how long it took."""
     started = time.time()
     if label:
         print(f"[{time.strftime('%H:%M:%S')}] START {label}", flush=True)
     cursor = conn.cursor()
-    cursor.execute(sql)
+    cursor.execute(for_backend(sql))
     cursor.close()
     if label:
         minutes = (time.time() - started) / 60
@@ -136,7 +155,7 @@ def run_sql(conn, sql, label=None):
 def query_df(conn, sql):
     """Run a SELECT and return the result as a pandas table. Use for small QA results only."""
     cursor = conn.cursor()
-    cursor.execute(sql)
+    cursor.execute(for_backend(sql))
     columns = [col[0] for col in cursor.description]
     rows = cursor.fetchall()
     cursor.close()

@@ -1,7 +1,7 @@
 """Runs the pipeline:  python -m runner [--check | --dry-run] [--from STEP | --only STEP]
 
   python -m runner --profile full   run for everyone (also: sample_1pct, sample_30pct)
-  python -m runner --check          test the Redshift connection and your settings
+  python -m runner --check          test the connection (or, on Explorer, the files) and your settings
   python -m runner --dry-run        write every rendered statement to build/rendered/, no database
   python -m runner                  run everything for the profile in config/study.yml (run.profile)
   python -m runner --from 4_matching  resume from a stage or step after a failure
@@ -11,6 +11,9 @@ Each profile has its own tables (suffix _s1, _s30, none) and results folder, so 
 run at the same time in separate terminals.
 Results (aggregates only, counts 1 to 10 hidden) go to results/<profile>/<stage>/, with
 run_info.json recording when, from which commit, and with which settings.
+After each step the row count of every table it built goes to build/parity/<profile>.json (not
+committed), so a Redshift run and an Explorer run can be compared exactly, table by table.
+The backend (Redshift or DuckDB) comes from your personal settings file (runner/config.py).
 """
 from __future__ import annotations
 
@@ -24,11 +27,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 import pandas as pd
-import redshift_connector
 
-from runner import config, db, results, sql, steps
+from runner import config, db, dialect, duckdb_backend, results, sql, steps
 
 log = logging.getLogger("runner")
+BUILD_DIR = config.REPO_ROOT / "build"
 
 
 class CheckFailed(RuntimeError):
@@ -57,7 +60,7 @@ def _rendered(statement: sql.Statement, variables: dict[str, str], year: int | N
     return sql.render(statement.text, {**variables, **extra}, where)
 
 
-def _run_sql_step(conn: redshift_connector.Connection, cfg: config.Config, step: steps.Step,
+def _run_sql_step(conn: db.Connection, cfg: config.Config, step: steps.Step,
                   variables: dict[str, str], results_dir: Path) -> None:
     for statement in steps.statements(step, variables):
         for year in _year_range(cfg, statement.for_each_year):
@@ -76,9 +79,17 @@ def _run_sql_step(conn: redshift_connector.Connection, cfg: config.Config, step:
 
 def _child_env(cfg: config.Config, secret: str, results_dir: Path) -> dict[str, str]:
     """Settings for Rhea's Gagne scripts, passed in their environment only (never as
-    command-line arguments, which other processes can read)."""
+    command-line arguments, which other processes can read). On DuckDB they open the profile's
+    file with the runner's settings and translate their SQL with runner/dialect.py (PYTHONPATH)."""
+    duck = {} if cfg.backend != "duckdb" else {
+        "SHARP_BACKEND": "duckdb",
+        "SHARP_DUCKDB_FILE": cfg.duckdb_file,
+        "SHARP_DUCKDB_SETTINGS": json.dumps(duckdb_backend.resource_settings(cfg)),
+        "PYTHONPATH": os.pathsep.join(p for p in (str(config.REPO_ROOT), os.environ.get("PYTHONPATH")) if p),
+    }
     return {
         **os.environ,
+        **duck,
         "REDSHIFT_HOST": cfg.host,
         "REDSHIFT_PORT": str(cfg.port),
         "REDSHIFT_DATABASE": cfg.database,
@@ -114,6 +125,8 @@ def _write_run_info(path: Path, cfg: config.Config, chosen: list[steps.Step], st
     info = {
         "run": cfg.run_name,
         "status": status,
+        "backend": cfg.backend,
+        "komodo_schema": cfg.komodo_schema,
         "started_utc": started.isoformat(timespec="seconds"),
         "finished_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "git_commit": _git("rev-parse", "HEAD"),
@@ -125,8 +138,29 @@ def _write_run_info(path: Path, cfg: config.Config, chosen: list[steps.Step], st
     path.write_text(json.dumps(info, indent=2), encoding="utf-8")
 
 
+def _record_parity(conn: db.Connection, cfg: config.Config, step: steps.Step, variables: dict[str, str]) -> None:
+    """Row counts of the tables the step built, in build/parity/<profile>.json: counts only, never
+    rows, and not rounded like results/, so two backends' runs can be compared exactly. Kept
+    across resumed runs; sorted, so `diff` of two files shows only the counts that differ."""
+    counts = {name: int(db.query(conn, f"SELECT COUNT(*) AS n FROM {cfg.work_schema}.{name}",
+                                 f"parity {name}")["n"].iloc[0])
+              for name in steps.created_tables(step, variables)}   # names come from the step files
+    if not counts:
+        return
+    path = BUILD_DIR / "parity" / f"{cfg.profile}.json"
+    try:
+        data = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
+    except json.JSONDecodeError:
+        log.warning("%s was not valid JSON; starting it again", path.as_posix())
+        data = {}
+    data.update({"profile": cfg.profile, "backend": cfg.backend, "komodo_schema": cfg.komodo_schema})
+    data.setdefault("row_counts", {})[step.path] = counts
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(data, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
 def _dry_run(cfg: config.Config, chosen: list[steps.Step], variables: dict[str, str]) -> None:
-    out_dir = config.REPO_ROOT / "build" / "rendered"
+    out_dir = BUILD_DIR / "rendered"
     for step in chosen:
         target = out_dir / (step.path + ".txt")
         target.parent.mkdir(parents=True, exist_ok=True)
@@ -136,9 +170,25 @@ def _dry_run(cfg: config.Config, chosen: list[steps.Step], variables: dict[str, 
         parts = []
         for statement in steps.statements(step, variables):
             for year in _year_range(cfg, statement.for_each_year):
-                parts.append(_rendered(statement, variables, year, step.path) + "\n;")
+                text = _rendered(statement, variables, year, step.path)
+                parts.append((dialect.to_duckdb(text) if cfg.backend == "duckdb" else text) + "\n;")
         target.write_text("\n\n".join(parts) + "\n", encoding="utf-8")
     log.info("rendered %d steps to %s", len(chosen), out_dir.as_posix())
+
+
+def _check_duckdb(cfg: config.Config) -> int:
+    """--check on Explorer: files, folders and column types only (runner/duckdb_backend.check)."""
+    import duckdb
+
+    problems = duckdb_backend.check(cfg)
+    for problem in problems:
+        log.error("check: %s", problem)
+    if problems:
+        return 1
+    log.info("Ready: DuckDB %s; Komodo %s/%s read as %s; profile %s; tables go to %s (schema %s, suffix %r); "
+             "results to results/%s.", duckdb.__version__, cfg.komodo_root, cfg.snapshot, cfg.komodo_schema,
+             cfg.profile, cfg.duckdb_file, cfg.work_schema, cfg.table_suffix, cfg.run_name)
+    return 0
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -162,17 +212,23 @@ def main(argv: list[str] | None = None) -> int:
         if args.dry_run:
             _dry_run(cfg, chosen, variables)
             return 0
-    except (config.ConfigError, sql.StepError) as error:
+        if args.check and cfg.backend == "duckdb":
+            return _check_duckdb(cfg)
+        driver_errors = db.errors(cfg)
+    except (config.ConfigError, sql.StepError, dialect.DialectError) as error:
         log.error("%s", error)
         return 1
-    secret = db.password()
+    secret = db.password() if cfg.backend == "redshift" else ""
     try:
-        conn = db.connect(cfg, secret)
-    except redshift_connector.Error as error:
-        log.error("Could not connect to Redshift as %s: %s", cfg.redshift_user, error)
+        conn: db.Connection | None = db.connect(cfg, secret)
+    except driver_errors as error:
+        if cfg.backend == "duckdb":
+            log.error("Could not open %s (is another run of %s using it?): %s", cfg.duckdb_file, cfg.profile, error)
+        else:
+            log.error("Could not connect to Redshift as %s: %s", cfg.redshift_user, error)
         return 1
 
-    results_dir = config.REPO_ROOT / "results" / cfg.run_name
+    results_dir = results.RESULTS_DIR / cfg.run_name
     started, current = datetime.now(timezone.utc), None
     try:
         if args.check:
@@ -196,19 +252,26 @@ def main(argv: list[str] | None = None) -> int:
             elif current.kind == "python":
                 steps.load_module(current).run(conn, cfg, variables, results_dir / current.stage)
             else:
+                # The script opens its own connection. DuckDB allows one writer per file, so close
+                # ours until it finishes; reconnecting reuses the password already given.
+                conn.close()
+                conn = None
                 _run_script(cfg, current, secret, results_dir)
+                conn = db.connect(cfg, secret)
+            _record_parity(conn, cfg, current, variables)
             log.info("DONE  %s", current.path)
         _write_run_info(results_dir / "run_info.json", cfg, chosen, started, "complete")
         return 0
-    except (config.ConfigError, sql.StepError, CheckFailed, results.UnsafeResultError,
-            redshift_connector.Error, subprocess.CalledProcessError, OSError) as error:
+    except (config.ConfigError, sql.StepError, dialect.DialectError, CheckFailed, results.UnsafeResultError,
+            subprocess.CalledProcessError, OSError, *driver_errors) as error:
         failed = current.path if current else "start"
         log.error("FAILED at %s: %s", failed, error)
         log.error("Fix it, then resume with:  python -m runner --profile %s --from %s", cfg.profile, failed)
         _write_run_info(results_dir / "run_info.json", cfg, chosen, started, f"failed at {failed}")
         return 1
     finally:
-        conn.close()
+        if conn is not None:
+            conn.close()
 
 
 if __name__ == "__main__":

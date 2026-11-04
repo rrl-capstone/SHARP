@@ -1,5 +1,6 @@
 # Copy this file to config/local.yml and fill it in. config/local.yml is not committed.
 # Your password is never stored: the runner asks for it, or reads REDSHIFT_PASSWORD.
+# This is the lab workspace (Redshift). On Explorer, use config/explorer.example.yml instead.
 
 redshift_user: your_redshift_username
 

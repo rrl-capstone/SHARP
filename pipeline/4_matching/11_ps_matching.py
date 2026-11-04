@@ -19,17 +19,18 @@ replace = FALSE, distance = "glm", link = "linear.logit", caliper = 0.2)):
 Ties are broken by patient_id order, so the same data always gives the same pairs. Individual
 pairs can differ from an R run where scores tie, but the method and the balance are the same.
 Writes ${work_schema}.ps_matched${sfx} and results/<profile>/4_matching/balance_smd.csv.
+On DuckDB the matched rows are inserted from a DataFrame; on Redshift, as VALUES statements.
 """
 from __future__ import annotations
 
 import logging
+from datetime import date
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
-import redshift_connector
 
-from runner import config, db, results, sql
+from runner import config, db, duckdb_backend, results, sql
 
 log = logging.getLogger(__name__)
 
@@ -156,7 +157,7 @@ def balance_table(shown: pd.DataFrame, logit: np.ndarray, hiv: np.ndarray,
     return pd.DataFrame(out)
 
 
-def run(conn: redshift_connector.Connection, cfg: config.Config, variables: dict[str, str],
+def run(conn: db.Connection, cfg: config.Config, variables: dict[str, str],
         results_dir: Path) -> None:
     if cfg.match_ratio != 1:
         raise config.ConfigError("Only 1:1 matching is built (agreed with the PI): set matching.ratio: 1.")
@@ -174,14 +175,23 @@ def run(conn: redshift_connector.Connection, cfg: config.Config, variables: dict
                             "ORDER BY patient_id", f"11 read {year}").reset_index(drop=True)
         df["hiv"] = df["hiv"].astype(int)
         pairs, logit, shown = match_year(df, cfg.caliper_sd)
-        rows = []
-        for number, (t, c) in enumerate(pairs, start=1):
-            for i in (t, c):   # one HIV person and their control share pair_id = <year>-<number>
-                rows.append(f"({year}, '{year}-12-31', '{year}-{number}', "
-                            f"{config.sql_quote(str(df.at[i, 'patient_id']))}, {int(df.at[i, 'hiv'])}, 1.0)")
-        for start in range(0, len(rows), INSERT_ROWS):
-            db.execute(conn, f"INSERT INTO {ps_matched} VALUES " + ",".join(rows[start:start + INSERT_ROWS]),
-                       f"11 insert {year}")
+        # one HIV person and their control share pair_id = <year>-<number>
+        members = [(number, i) for number, (t, c) in enumerate(pairs, start=1) for i in (t, c)]
+        if cfg.backend == "duckdb":
+            duckdb_backend.insert_frame(conn, ps_matched, pd.DataFrame({
+                "analysis_year": [year] * len(members),
+                "index_date": [date(year, 12, 31)] * len(members),
+                "pair_id": [f"{year}-{number}" for number, _ in members],
+                "patient_id": [str(df.at[i, "patient_id"]) for _, i in members],
+                "hiv": [int(df.at[i, "hiv"]) for _, i in members],
+                "match_weight": [1.0] * len(members)}))
+        else:
+            rows = [f"({year}, '{year}-12-31', '{year}-{number}', "
+                    f"{config.sql_quote(str(df.at[i, 'patient_id']))}, {int(df.at[i, 'hiv'])}, 1.0)"
+                    for number, i in members]
+            for start in range(0, len(rows), INSERT_ROWS):
+                db.execute(conn, f"INSERT INTO {ps_matched} VALUES " + ",".join(rows[start:start + INSERT_ROWS]),
+                           f"11 insert {year}")
         year_balance = balance_table(shown, logit, df["hiv"].to_numpy(), pairs, year)
         balance.append(year_balance)
         log.info("%d: %d of %d people with HIV matched; worst |SMD| after matching %.3f",

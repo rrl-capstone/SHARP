@@ -1,0 +1,26 @@
+# Explorer (Northeastern's cluster): copy this file to config/explorer.yml and fill it in.
+# With config/explorer.yml present the runner uses DuckDB on Komodo's parquet files instead of
+# Redshift. It is not committed. Keep config/local.yml out of the same checkout: both is an error.
+
+backend: duckdb
+
+# Komodo's read-only parquet files: <komodo_root>/<snapshot>/<table>/*.parquet
+komodo_root: /projects/OHDSI_Lab/data/komodo
+# 202606 is the snapshot the Redshift runs use (komodo_schema in config/study.yml).
+snapshot: "202606"
+
+# Your project folder: the only place on Explorer you can write. It holds each profile's tables
+# (sharp_<profile>.duckdb: patient-level data, never copy it out), the Slurm logs (logs/) and
+# DuckDB's spill files (duckdb_tmp/<profile>/).
+extracts_dir: /projects/OHDSI_Lab/extracts/your_project_dir
+
+# Schema for the tables inside each .duckdb file.
+# work_schema: work
+
+duckdb:
+  # By default threads come from SLURM_CPUS_PER_TASK (4 outside Slurm) and memory_limit is 85% of
+  # SLURM_MEM_PER_NODE (DuckDB's own default outside Slurm). Set these only to override them.
+  # threads: 8
+  # memory_limit: 48GB
+  # Spill files go to <temp_directory>/<profile>/ (default: <extracts_dir>/duckdb_tmp).
+  # temp_directory: /projects/OHDSI_Lab/extracts/your_project_dir/duckdb_tmp

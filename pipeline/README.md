@@ -24,7 +24,7 @@ with counts from 1 to 10 shown as `<11`.
 | | `3_condition_dx_rows.sql` | `condition_dx_rows` | [HEAVY] One diagnosis scan per year, condition codes only |
 | | `4_person_year_conditions.sql` | `person_year_conditions` | Each person-year's conditions; **comparison before matching** |
 | **4 Matching** (Lifei) | `10_ps_input.sql` | `ps_input` | The HIV group plus 20 random controls per case, by year and sex |
-| | `11_ps_matching.R` | `ps_matched` | Per year, 1:1: nearest neighbour, exact on sex, score from birth year, census region and race, caliper `matching.caliper_sd`; balance before and after |
+| | `11_ps_matching.py` | `ps_matched` | Per year, 1:1: nearest neighbour, exact on sex, score from birth year, census region and race, caliper `matching.caliper_sd`; balance before and after |
 | | `12_matched_summaries.sql` | | Who was matched, characteristics before and after, CONSORT for year one; **comparison after matching** |
 | **5 Gagne** (Rhea) | `gagne_1_evidence.py` | `gagne_person_years`, `gagne_rules`, `gagne_dx_candidates`, `gagne_code_map`, `gagne_group_evidence` | One diagnosis scan; Nemo's rules on the distinct codes |
 | | `gagne_2_scores.py` | `gagne_scores` | Per matched person-year: 20 group flags, `gagne_score`, `gagne_score_excl_hiv` |
@@ -65,8 +65,13 @@ with counts from 1 to 10 shown as `<11`.
    must hold. Name percentages `pct_*` and averages `mean_*`; every other number is a count.
 5. A scan of a big Komodo table goes one year at a time: `-- for each year: study` above the
    INSERT.
-6. `python -m runner --dry-run` renders everything to `build/rendered/`; `python -m pytest`
-   checks it.
+6. Write Redshift SQL. On Explorer each statement is translated to DuckDB by `runner/dialect.py`,
+   which refuses what it cannot translate safely (for example `NOT IN ('a', 'b')`, or a
+   `TO_DATE` format other than `'YYYY-MM-DD'`); a test translates every step. A new Komodo table
+   also needs its entry in `KOMODO_TABLES` and `REQUIRED_COLUMNS` in `runner/duckdb_backend.py`
+   (a test fails otherwise).
+7. `python -m runner --dry-run` renders everything to `build/rendered/` (in DuckDB SQL when
+   `config/explorer.yml` is present); `python -m pytest` checks it.
 
 A frailty index, for example, would be a new stage folder with its steps, one more block in
 `STEPS`, and one more `JOIN` in the care-quality results.
