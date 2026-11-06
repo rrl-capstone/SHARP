@@ -6,6 +6,7 @@
   python -m runner                  run everything for the profile in config/study.yml (run.profile)
   python -m runner --from 4_matching  resume from a stage or step after a failure
   python -m runner --only 07_pwh_cohort.sql   run one stage or step
+  python -m runner --rebuild-dx     (Explorer) rebuild the profile's diagnosis table before stage 2
 
 Each profile has its own tables (suffix _s1, _s30, none) and results folder, so the three can
 run at the same time in separate terminals.
@@ -14,6 +15,8 @@ run_info.json recording when, from which commit, and with which settings.
 After each step the row count of every table it built goes to build/parity/<profile>.json (not
 committed), so a Redshift run and an Explorer run can be compared exactly, table by table.
 The backend (Redshift or DuckDB) comes from your personal settings file (runner/config.py).
+On DuckDB the diagnoses are materialized once per profile before the first step after stage 1
+(runner/duckdb_backend.ensure_dx_table).
 """
 from __future__ import annotations
 
@@ -23,6 +26,7 @@ import logging
 import os
 import subprocess
 import sys
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -199,6 +203,8 @@ def main(argv: list[str] | None = None) -> int:
     mode.add_argument("--dry-run", action="store_true", help="render the SQL to build/rendered/")
     parser.add_argument("--profile", choices=list(config.PROFILES),
                         help="which people to run on (default: run.profile in config/study.yml)")
+    parser.add_argument("--rebuild-dx", action="store_true",
+                        help="Explorer only: rebuild the profile's diagnosis table before stage 2")
     where = parser.add_mutually_exclusive_group()
     where.add_argument("--from", dest="start", help="run from this stage or step on")
     where.add_argument("--only", help="run only this stage or step")
@@ -230,6 +236,7 @@ def main(argv: list[str] | None = None) -> int:
 
     results_dir = results.RESULTS_DIR / cfg.run_name
     started, current = datetime.now(timezone.utc), None
+    rebuild_dx = args.rebuild_dx
     try:
         if args.check:
             # identifiers below were validated by config.load()
@@ -247,6 +254,11 @@ def main(argv: list[str] | None = None) -> int:
                  cfg.work_schema, cfg.table_suffix)
         for current in chosen:
             log.info("START %s", current.path)
+            began = time.monotonic()
+            if cfg.backend == "duckdb" and current.stage != "1_cohort":
+                # Diagnoses of the profile's people, built once, before the first step that reads them.
+                duckdb_backend.ensure_dx_table(conn, cfg, rebuild=rebuild_dx)
+                rebuild_dx = False
             if current.kind in ("sql", "sql_from_python"):
                 _run_sql_step(conn, cfg, current, variables, results_dir)
             elif current.kind == "python":
@@ -259,7 +271,7 @@ def main(argv: list[str] | None = None) -> int:
                 _run_script(cfg, current, secret, results_dir)
                 conn = db.connect(cfg, secret)
             _record_parity(conn, cfg, current, variables)
-            log.info("DONE  %s", current.path)
+            log.info("DONE  %s (%s)", current.path, duckdb_backend.elapsed(time.monotonic() - began))
         _write_run_info(results_dir / "run_info.json", cfg, chosen, started, "complete")
         return 0
     except (config.ConfigError, sql.StepError, dialect.DialectError, CheckFailed, results.UnsafeResultError,

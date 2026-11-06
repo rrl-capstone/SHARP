@@ -2,24 +2,36 @@
 
   <extracts_dir>/sharp_<profile>.duckdb   the work schema: patient-level tables, never copied out.
                                           One file per profile, so the three can run at once.
-  komodo_<snapshot>.<table>               a view over <komodo_root>/<snapshot>/<table>/*.parquet with
-                                          every column name in lower case (DuckDB keeps the parquet's
-                                          upper case, which would reach result headers and pandas)
-  komodo_<snapshot>.normalized_dx_events  a view built from the two event tables: Redshift has it as a
-                                          table, the parquet snapshot does not (normalized_dx_view_sql)
+  komodo_<snapshot>.<table>               a view over <komodo_root>/<snapshot>/<table>/<table>_*.parquet
+                                          with every column name in lower case (DuckDB keeps the
+                                          parquet's upper case, which would reach result headers and
+                                          pandas). Only files named after the table are read, so a
+                                          stray extract saved into a table folder is ignored.
+  komodo_<snapshot>.normalized_dx_events  Redshift has it as a table, the parquet snapshot does not.
+                                          Built from the two event tables (dx_query): first as a view
+                                          over all patients, then, before the first step that needs
+                                          it, materialized ONCE per profile as
+                                          <work_schema>.dx_events_<snapshot><suffix> with the
+                                          profile's sample filter applied to the raw event rows
+                                          before the arrays are unnested; the view then reads that
+                                          table. Without this, every step that reads diagnoses would
+                                          unnest every patient's arrays again.
 
 The step SQL is translated by runner/dialect.py. Behaviour that differs without any syntax to
 rewrite is set on the connection here, so DuckDB answers as Redshift does: integer division,
 and NULLs last when sorting ascending but first when descending.
 
 DuckDB allows one writer per file: the runner closes its connection before each Gagne script
-(its own process, opening the same file) and reopens it after.
+(its own process, opening the same file) and reopens it after. Views are stored in the file, so
+the Gagne scripts see the same normalized_dx_events.
 """
 from __future__ import annotations
 
+import logging
 import os
 import sys
 import tempfile
+import time
 from collections.abc import Mapping
 from pathlib import Path
 from typing import TYPE_CHECKING, Union
@@ -30,6 +42,8 @@ from runner.config import Config, ConfigError, sql_quote
 
 if TYPE_CHECKING:
     import duckdb
+
+log = logging.getLogger("runner")
 
 KOMODO_TABLES = ("inpatient_events", "non_inpatient_events", "patient_closed", "patient_demographics",
                  "patient_geography", "patient_insurance", "patient_mortality", "patient_race_ethnicity",
@@ -101,8 +115,28 @@ def _identifier(name: str) -> str:
     return '"' + name.replace('"', '""') + '"'
 
 
+def _table_folder(cfg: Config, table: str) -> Path:
+    return Path(cfg.komodo_root, cfg.snapshot, table)
+
+
+def _table_pattern(table: str) -> str:
+    """Komodo's own files are named <table>_<n>_<n>_<n>.snappy.parquet. Anything else in the folder
+    (someone's saved extract, for example) has a different schema and must not be read."""
+    return f"{table}_*.parquet"
+
+
 def _parquet(cfg: Config, table: str) -> str:
-    return f"read_parquet({sql_quote(f'{cfg.komodo_root}/{cfg.snapshot}/{table}/*.parquet')})"
+    return f"read_parquet({sql_quote(f'{cfg.komodo_root}/{cfg.snapshot}/{table}/{_table_pattern(table)}')})"
+
+
+def stray_files(cfg: Config, table: str) -> list[str]:
+    """Parquet files in a table's folder that the view does not read (names only, never opened)."""
+    folder = _table_folder(cfg, table)
+    if not folder.is_dir():
+        return []
+    every = {f.name for f in folder.glob("*.parquet")}
+    ours = {f.name for f in folder.glob(_table_pattern(table))}
+    return sorted(every - ours)
 
 
 def table_view_sql(conn: duckdb.DuckDBPyConnection, cfg: Config, table: str) -> str:
@@ -116,7 +150,7 @@ def table_view_sql(conn: duckdb.DuckDBPyConnection, cfg: Config, table: str) -> 
     return f"CREATE OR REPLACE VIEW {cfg.komodo_schema}.{table} AS SELECT {select} FROM {_parquet(cfg, table)}"
 
 
-def normalized_dx_view_sql(komodo_schema: str) -> str:
+def dx_query(komodo_schema: str, patient_filter: str = "TRUE") -> str:
     """normalized_dx_events from the parquet event tables: one row per patient, claim
     (utilization_id), diagnosis code and date, with the columns the steps read (patient_id,
     dx_code, event_date, source_table) plus utilization_id and dx_position.
@@ -127,32 +161,34 @@ def normalized_dx_view_sql(komodo_schema: str) -> str:
                             PRIMARY_DIAGNOSIS_CODE_ARRAY and DIAGNOSIS_CODES. Lines of one claim on
                             the same date collapse to one row per code.
 
+    patient_filter is applied to the raw event rows, before any array is unnested (the profile's
+    MD5 sample filter when materializing; TRUE for the all-patients view).
     Arrays are parsed as JSON; NULL and [] give no rows. Codes are trimmed and upper-cased, and
     empty codes dropped. A code found in more than one place on the same claim and date is one
     row, with the most important position: primary, then admission, then secondary or other.
     UNNEST sits in the select list (not FROM t, UNNEST(...)) so DuckDB unnests in place instead of
-    joining on the JSON text, and the date filters of the steps still reach the parquet scan."""
+    joining on the JSON text."""
     k = komodo_schema
-    return f"""CREATE OR REPLACE VIEW {k}.{DX_VIEW} AS
-WITH coded AS (
+    w = f"WHERE {patient_filter}"
+    return f"""WITH coded AS (
     SELECT patient_id, utilization_id, admit_date AS event_date, 'INPATIENT_EVENTS' AS source_table,
            'primary' AS dx_position, 1 AS position_rank, primary_diagnosis_code AS code
-    FROM {k}.inpatient_events
+    FROM {k}.inpatient_events {w}
     UNION ALL
     SELECT patient_id, utilization_id, admit_date, 'INPATIENT_EVENTS', 'admission', 2, admission_diagnosis_code
-    FROM {k}.inpatient_events
+    FROM {k}.inpatient_events {w}
     UNION ALL
     SELECT patient_id, utilization_id, admit_date, 'INPATIENT_EVENTS', 'secondary', 3,
            UNNEST(from_json(secondary_diagnosis_codes, '["VARCHAR"]'))
-    FROM {k}.inpatient_events
+    FROM {k}.inpatient_events {w}
     UNION ALL
     SELECT patient_id, utilization_id, service_date, 'NON_INPATIENT_EVENTS', 'primary', 1,
            UNNEST(from_json(primary_diagnosis_code_array, '["VARCHAR"]'))
-    FROM {k}.non_inpatient_events
+    FROM {k}.non_inpatient_events {w}
     UNION ALL
     SELECT patient_id, utilization_id, service_date, 'NON_INPATIENT_EVENTS', 'other', 4,
            UNNEST(from_json(diagnosis_codes, '["VARCHAR"]'))
-    FROM {k}.non_inpatient_events
+    FROM {k}.non_inpatient_events {w}
 ),
 cleaned AS (
     SELECT patient_id, utilization_id, UPPER(TRIM(code)) AS dx_code, event_date, source_table,
@@ -164,6 +200,51 @@ SELECT patient_id, utilization_id, dx_code, event_date, source_table,
 FROM cleaned
 WHERE dx_code <> ''
 GROUP BY patient_id, utilization_id, dx_code, event_date, source_table"""
+
+
+def normalized_dx_view_sql(komodo_schema: str) -> str:
+    """The all-patients diagnosis view (used by --check, and until the profile's table exists)."""
+    return f"CREATE OR REPLACE VIEW {komodo_schema}.{DX_VIEW} AS\n{dx_query(komodo_schema)}"
+
+
+def dx_table_name(cfg: Config) -> str:
+    """The profile's materialized diagnosis table, e.g. dx_events_202610_s1 (no schema)."""
+    return f"dx_events_{cfg.snapshot}{cfg.table_suffix}"
+
+
+def _dx_table_exists(conn: duckdb.DuckDBPyConnection, cfg: Config) -> bool:
+    row = conn.execute("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = ? AND table_name = ?",
+                       [cfg.work_schema, dx_table_name(cfg)]).fetchone()
+    return bool(row and row[0])
+
+
+def _point_view_at_table(conn: duckdb.DuckDBPyConnection, cfg: Config) -> None:
+    conn.execute(f"CREATE OR REPLACE VIEW {cfg.komodo_schema}.{DX_VIEW} AS "
+                 f"SELECT * FROM {cfg.work_schema}.{dx_table_name(cfg)}")
+
+
+def ensure_dx_table(conn: object, cfg: Config, rebuild: bool = False) -> None:
+    """Build the profile's diagnosis table once (or again with rebuild) and point
+    normalized_dx_events at it. The sample filter runs on the raw event rows, so a 1% profile
+    unnests about 1% of the arrays. Logs counts and time only, never rows."""
+    import duckdb
+
+    assert isinstance(conn, duckdb.DuckDBPyConnection)
+    table = f"{cfg.work_schema}.{dx_table_name(cfg)}"
+    if rebuild or not _dx_table_exists(conn, cfg):
+        log.info("BUILD %s (diagnoses of the %s people, once; later steps read it)", table, cfg.profile)
+        began = time.monotonic()
+        conn.execute(f"DROP TABLE IF EXISTS {table}")
+        conn.execute(f"CREATE TABLE {table} AS\n{dx_query(cfg.komodo_schema, cfg.sample_filter)}")
+        row = conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()
+        log.info("BUILT %s: %s rows in %s", table, f"{row[0]:,}" if row else "?", elapsed(time.monotonic() - began))
+    _point_view_at_table(conn, cfg)
+
+
+def elapsed(seconds: float) -> str:
+    minutes, secs = divmod(int(seconds), 60)
+    hours, minutes = divmod(minutes, 60)
+    return f"{hours}h{minutes:02d}m{secs:02d}s" if hours else f"{minutes}m{secs:02d}s"
 
 
 def open_file(path: str, settings: Mapping[str, Setting]) -> duckdb.DuckDBPyConnection:
@@ -193,11 +274,15 @@ def open_database(cfg: Config) -> duckdb.DuckDBPyConnection:
 
 def connect(cfg: Config) -> duckdb.DuckDBPyConnection:
     """Open the profile's file and (re)create the Komodo views, so a changed snapshot or folder
-    in config/explorer.yml takes effect."""
+    in config/explorer.yml takes effect. normalized_dx_events reads the profile's materialized
+    table when it exists, otherwise all patients (until ensure_dx_table builds the table)."""
     conn = open_database(cfg)
     for table in KOMODO_TABLES:
         conn.execute(table_view_sql(conn, cfg, table))
-    conn.execute(normalized_dx_view_sql(cfg.komodo_schema))
+    if _dx_table_exists(conn, cfg):
+        _point_view_at_table(conn, cfg)
+    else:
+        conn.execute(normalized_dx_view_sql(cfg.komodo_schema))
     return conn
 
 
@@ -247,17 +332,21 @@ def _writable(folder: str) -> str | None:
 def check(cfg: Config) -> list[str]:
     """--check: the parquet folders, the writable folders, the profile's file, and every column
     the steps read with its type. Reads file permissions and parquet schemas only, never rows.
-    Returns the problems found (none: ready to run)."""
+    Returns the problems found (none: ready to run). Stray files in a table folder are printed
+    as warnings, not problems: the views do not read them."""
     import duckdb
 
     problems = []
     for table in KOMODO_TABLES:
-        folder = Path(cfg.komodo_root, cfg.snapshot, table)
-        files = sorted(folder.glob("*.parquet")) if folder.is_dir() else []
+        folder = _table_folder(cfg, table)
+        files = sorted(folder.glob(_table_pattern(table))) if folder.is_dir() else []
         if not files:
-            problems.append(f"{folder.as_posix()}: no .parquet files")
+            problems.append(f"{folder.as_posix()}: no {_table_pattern(table)} files")
         elif unreadable := sum(not os.access(f, os.R_OK) for f in files):
             problems.append(f"{folder.as_posix()}: {unreadable} of {len(files)} .parquet files are not readable")
+        if stray := stray_files(cfg, table):
+            print(f"check: warning: {folder.as_posix()}: ignoring {len(stray)} file(s) not named "
+                  f"{_table_pattern(table)}: {', '.join(stray)}", file=sys.stderr)
     problems += [p for p in (_writable(cfg.extracts_dir), _writable(cfg.duckdb_temp_directory)) if p]
     if problems:
         return problems
@@ -274,7 +363,10 @@ def check(cfg: Config) -> list[str]:
                 continue
             problems += column_problems(conn, cfg.komodo_schema, table, REQUIRED_COLUMNS[table])
         if not problems:
-            conn.execute(normalized_dx_view_sql(cfg.komodo_schema))
+            if _dx_table_exists(conn, cfg):
+                _point_view_at_table(conn, cfg)
+            else:
+                conn.execute(normalized_dx_view_sql(cfg.komodo_schema))
             problems += column_problems(conn, cfg.komodo_schema, DX_VIEW, DX_VIEW_COLUMNS)
     except duckdb.Error as error:
         problems.append(f"{DX_VIEW}: {error}")
